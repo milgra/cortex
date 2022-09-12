@@ -21,10 +21,10 @@ char* intro =
 #else
     "frame 120 label LEFT/RIGHT_ARROW\n"
 #endif
-    "frame 240 label _\n"
-    "frame 360 label GO\n"
-    "frame 480 label WITH_THE_FLOW red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"
-    "frame 600 next true\n";
+    "frame 200 label _\n"
+    "frame 250 label GO\n"
+    "frame 300 label WITH_THE_FLOW red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"
+    "frame 350 next true\n";
 
 char* grats =
     "frame 0 cube 0 label CONGRATULATIONS red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"

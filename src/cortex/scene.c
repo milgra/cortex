@@ -393,8 +393,7 @@ void scene_setup_explosion(
 	"KEEP CALM!!!",
 	"FEEL THE FLOW!!!"};
 
-    REL(script.label);
-
+    if (script.label) REL(script.label);
     script.label = cstr_new_cstring(texts[rand() % 4]);
 
     scene_generate_labels();

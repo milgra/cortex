@@ -1,3 +1,4 @@
+#include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -12,6 +13,9 @@
 #include "scene.c"
 #include "settings.c"
 #include "zc_cstring.c"
+#include "zc_log.c"
+#include "zc_path.c"
+#include "zc_time.c"
 
 char     quit   = 0;
 float    scale  = 1.0;
@@ -26,6 +30,9 @@ Mix_Music* actualmusic;
 
 SDL_Window*   window;
 SDL_GLContext context;
+
+char* res_path;
+char* base_path;
 
 void main_open(char* url)
 {
@@ -112,7 +119,7 @@ void main_onmessage(
 	else Mix_ResumeMusic();
 
 	scene_loadmsg_t msg = {
-	    15.0,
+	    25.0,
 	    defaults.stage_a};
 
 	bus_notify(
@@ -139,7 +146,7 @@ void main_onmessage(
 
 	scene_loadmsg_t msg =
 	    {
-		23.0,
+		30.0,
 		defaults.stage_b};
 
 	bus_notify(
@@ -166,7 +173,7 @@ void main_onmessage(
 
 	scene_loadmsg_t msg =
 	    {
-		32.0,
+		35.0,
 		defaults.stage_c};
 
 	bus_notify(
@@ -180,7 +187,6 @@ void main_onmessage(
 	{
 	    if (strcmp(defaults.currentlevel, "levelC") == 0)
 	    {
-
 		Mix_HaltMusic();
 		Mix_PlayMusic(outromusic, -1);
 		Mix_VolumeMusic(64);
@@ -248,16 +254,10 @@ void main_init(
 {
     srand((unsigned int) time(NULL));
 
-    char* basepath = SDL_GetPrefPath(
-	"milgra",
-	"cortex");
-
-    char* respath = SDL_GetBasePath();
-
     defaults.state = kStateMenu;
 
     settings_init(
-	basepath,
+	base_path,
 	(char*) "cortex.state");
 
     defaults_init();
@@ -303,25 +303,29 @@ void main_init(
 
     char* gamesndpath = cstr_new_format(
 	PATH_MAX,
-	"%sgame.wav",
-	respath,
+	"%s/game.wav",
+	res_path,
 	NULL);
 
     char* breaksndpath = cstr_new_format(
 	PATH_MAX,
-	"%sbreak.wav",
-	respath,
+	"%s/break.wav",
+	res_path,
 	NULL);
 
     char* outrosndpath = cstr_new_format(
 	PATH_MAX,
-	"%soutro.wav",
-	respath,
+	"%s/outro.wav",
+	res_path,
 	NULL);
 
     gamemusic  = Mix_LoadMUS(gamesndpath);
     outromusic = Mix_LoadMUS(outrosndpath);
     breaksound = Mix_LoadWAV(breaksndpath);
+
+    if (!gamemusic) printf("Couldn't load gamemusic from %s\n", gamesndpath);
+    if (!outromusic) printf("Couldn't load gamemusic from %s\n", outrosndpath);
+    if (!breaksound) printf("Couldn't load gamemusic from %s\n", breaksndpath);
 
     REL(gamesndpath);
     REL(outrosndpath);
@@ -332,7 +336,7 @@ void main_init(
 	"RESIZE",
 	&dimensions);
 
-    SDL_free(basepath);
+    SDL_free(base_path);
 }
 
 void main_free(
@@ -487,6 +491,61 @@ void main_loop(
 
 int main(int argc, char* argv[])
 {
+    zc_log_use_colors(isatty(STDERR_FILENO));
+    zc_log_level_info();
+    zc_time(NULL);
+
+    printf("Cortex v" CORTEX_VERSION " by Milan Toth ( www.milgra.com )\n");
+
+    const char* usage =
+	"Usage: cortex [options]\n"
+	"\n"
+	"  -h, --help                          Show help message and quit.\n"
+	"  -v                                  Increase verbosity of messages, defaults to errors and warnings only.\n"
+	"  -r --resources= [resources folder] \t use resources dir for session\n"
+	"\n";
+
+    const struct option long_options[] = {
+	{"help", no_argument, NULL, 'h'},
+	{"verbose", no_argument, NULL, 'v'},
+	{"resources", optional_argument, 0, 'r'}};
+
+    char* res_par = NULL;
+
+    int option       = 0;
+    int option_index = 0;
+
+    while ((option = getopt_long(argc, argv, "vhr:", long_options, &option_index)) != -1)
+    {
+	switch (option)
+	{
+	    case '?': printf("parsing option %c value: %s\n", option, optarg); break;
+	    case 'r': res_par = cstr_new_cstring(optarg); break; // REL 1
+	    case 'v': zc_log_inc_verbosity(); break;
+	    default: fprintf(stderr, "%s", usage); return EXIT_FAILURE;
+	}
+    }
+
+    srand((unsigned int) time(NULL));
+
+    char cwd[PATH_MAX] = {"~"};
+    getcwd(cwd, sizeof(cwd));
+
+    char* sdl_base = SDL_GetBasePath();
+    char* wrk_path = path_new_normalize(sdl_base, NULL); // REL 6
+    SDL_free(sdl_base);
+
+    res_path = res_par ? path_new_normalize(res_par, wrk_path) : cstr_new_cstring(PKG_DATADIR); // REL 7
+
+    base_path = SDL_GetPrefPath(
+	"milgra",
+	"cortex");
+
+    // print path info to console
+
+    zc_log_debug("resource path : %s", res_path);
+    zc_log_debug("base path : %s", base_path);
+
     // enable high dpi
 
     SDL_SetHint(
