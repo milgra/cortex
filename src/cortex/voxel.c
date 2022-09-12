@@ -79,7 +79,6 @@ void voxel_set_color(
     v4_t     midcolor,
     v4_t     btmcolor)
 {
-
     voxel->colors[0] = voxel_color_from_floats(topcolor.x, topcolor.y, topcolor.z, topcolor.w);
     voxel->colors[1] = voxel_color_from_floats(midcolor.x, midcolor.y, midcolor.z, midcolor.w);
     voxel->colors[2] = voxel_color_from_floats(btmcolor.x, btmcolor.y, btmcolor.z, btmcolor.w);
@@ -128,7 +127,6 @@ v3_t voxel_intersect(
     v3_t     line_b,
     char*    side)
 {
-
     voxel_update(voxel);
 
     v3_t result = {0};
@@ -174,7 +172,6 @@ void voxel_collect_points(
     voxel_t*       voxel,
     floatbuffer_t* buffer)
 {
-
     // TODO REMOVE!!!
     voxel_update(voxel);
 

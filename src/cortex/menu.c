@@ -11,13 +11,10 @@
 #include <stdio.h>
 
 #define MENU_STATE_DEFAULT 0
-#define MENU_STATE_SHOWPRICES 1
-#define MENU_STATE_SHOWTHANKS 2
 
 typedef struct _menu_t menu_t;
 struct _menu_t
 {
-
     char state;
 
     float angle;
@@ -58,7 +55,7 @@ extern menu_t menu;
 #include <float.h>
 #include <string.h>
 
-#include "mtbus.c"
+#include "bus.c"
 
 menu_t menu;
 
@@ -76,8 +73,7 @@ void menu_init(
     float width,
     float height)
 {
-
-    mtbus_subscribe(
+    bus_subscribe(
 	"CTL",
 	menu_onmessage);
 
@@ -94,7 +90,6 @@ void menu_init(
 void menu_free(
     void)
 {
-
     REL(menu.buffer);
 }
 
@@ -107,7 +102,6 @@ void menu_float_from_uint(
     float*   a,
     uint32_t color)
 {
-
     *r = (float) ((color >> 24) & 0xFF) / 255.0;
     *g = (float) ((color >> 16) & 0xFF) / 255.0;
     *b = (float) ((color >> 8) & 0xFF) / 255.0;
@@ -120,7 +114,6 @@ uint32_t menu_color_from_floats(
     float b,
     float a)
 {
-
     return (uint32_t) (r * 255.0) << 24 |
 	   (uint8_t) (g * 255.0) << 16 |
 	   (uint8_t) (b * 255.0) << 8 |
@@ -136,7 +129,6 @@ void menu_label(
     float          z,
     floatbuffer_t* buffer)
 {
-
     v2_t textsize = pixeltext_calcsize(
 	label,
 	size);
@@ -185,7 +177,6 @@ void menu_label(
 void menu_redraw(
     void)
 {
-
     floatbuffer_reset(menu.buffer);
     floatbuffer_reset(menu.glowbuffer);
 
@@ -389,94 +380,23 @@ void menu_redraw(
 
     // donate
 
-    if (defaults.prices_arrived == 1)
-    {
+    cube = (voxel_t){
+	.model  = {-1400.0, -360.0, -610.0, 3700.0, 85.0, 5.0},
+	.colors = {[0 ... 2] = col}};
 
-	if (menu.state == MENU_STATE_DEFAULT)
-	{
+    voxel_collect_points(&cube, menu.buffer);
+    menu.buttons[11] = cube;
 
-	    cube = (voxel_t){
-		.model  = {-1400.0, -360.0, -610.0, 3700.0, 85.0, 5.0},
-		.colors = {[0 ... 2] = col}};
+    char* label = "BUY ME A COFFEE";
 
-	    voxel_collect_points(&cube, menu.buffer);
-	    menu.buttons[11] = cube;
-
-	    char* label = "TO PLAY INSANE PLEASE DONATE HERE";
-
-	    if (defaults.donation_arrived > 0)
-	    {
-		label = "PLEASE DONATE IF YOU LIKE THE GAME";
-	    }
-
-	    menu_label(
-		label,
-		0xFFFFFF88,
-		10.0,
-		160.0,
-		-375.0,
-		-600.0,
-		menu.glowbuffer);
-	}
-	else if (menu.state == MENU_STATE_SHOWPRICES)
-	{
-
-	    cube = (voxel_t){
-		.model  = {-1400.0, -360, -610.0, 1270.0, 85.0, 5.0},
-		.colors = {[0 ... 2] = col}};
-
-	    voxel_collect_points(&cube, menu.buffer);
-	    menu.buttons[8] = cube;
-
-	    menu_label(defaults.prices[0], 0xFFFFFF88, 8.0, -320.0, -375.0, -600.0, menu.glowbuffer);
-
-	    cube = (voxel_t){
-		.model  = {-100.0, -360, -610.0, 520.0, 85.0, 5.0},
-		.colors = {[0 ... 2] = col}};
-
-	    voxel_collect_points(&cube, menu.buffer);
-	    menu.buttons[9] = cube;
-
-	    menu_label(defaults.prices[1], 0xFFFFFF88, 8.0, 160, -375.0, -600.0, menu.glowbuffer);
-
-	    cube = (voxel_t){
-		.model  = {450.0, -360, -610.0, 1300.0, 85.0, 5.0},
-		.colors = {[0 ... 2] = col}};
-
-	    voxel_collect_points(&cube, menu.buffer);
-	    menu.buttons[10] = cube;
-
-	    menu_label(defaults.prices[2], 0xFFFFFF88, 8.0, 640, -375.0, -600.0, menu.glowbuffer);
-	}
-	else if (menu.state == MENU_STATE_SHOWTHANKS)
-	{
-
-	    cube = (voxel_t){
-		.model  = {-1400.0, -360.0, -610.0, 3700.0, 85.0, 5.0},
-		.colors = {[0 ... 2] = col}};
-
-	    voxel_collect_points(&cube, menu.buffer);
-	    menu.buttons[11] = cube;
-
-	    menu_label(
-		"THANK YOU VERY MUCH!!!",
-		0xFFFFFF88,
-		10.0,
-		160.0,
-		-375.0,
-		-600.0,
-		menu.glowbuffer);
-	}
-    }
-    else
-    {
-
-	cube = (voxel_t){
-	    .model  = {-1400.0, -360.0, -610.0, 3700.0, 85.0, 5.0},
-	    .colors = {[0 ... 2] = col}};
-
-	voxel_collect_points(&cube, menu.buffer);
-    }
+    menu_label(
+	label,
+	0xFFFFFF88,
+	10.0,
+	160.0,
+	-375.0,
+	-600.0,
+	menu.glowbuffer);
 
     // reset
 
@@ -502,7 +422,6 @@ void menu_redraw(
 
     // fullscreen button on desktop
 
-#if !defined(ANDROID) && !defined(IOS)
     cube = (voxel_t){
 	.model  = {-170.0, 270.0, -610.0, 590.0, 80.0, 5.0},
 	.colors = {[0 ... 2] = col}};
@@ -511,7 +430,6 @@ void menu_redraw(
     menu.buttons[5] = cube;
 
     menu_label("FULLSCREEN", 0xFFFFFF88, 8.0, 120.0, 250.0, -600.0, menu.glowbuffer);
-#endif
 
     // impressum
 
@@ -528,7 +446,6 @@ void menu_redraw(
 
     // exit button on desktop
 
-#if !defined(ANDROID) && !defined(IOS)
     cube = (voxel_t){
 	.model  = {0.0, -700.0, -650.0, 350.0, 100.0, 5.0},
 	.colors = {[0 ... 2] = col}};
@@ -537,7 +454,6 @@ void menu_redraw(
     menu.buttons[7] = cube;
 
     menu_label("EXIT", 0xFFFFFF88, 15.0, 170.0, -680.0, -600.0, menu.glowbuffer);
-#endif
 }
 
 /* touch happened, select button */
@@ -546,7 +462,6 @@ void menu_touch_down(
     float x,
     float y)
 {
-
     if (defaults.state != kStateMenu) return;
 
     /* create screen-plane-normal vectors */
@@ -569,61 +484,19 @@ void menu_touch_down(
 	if (is.x != FLT_MAX)
 	{
 
-	    if (index == 0) mtbus_notify("MNU", "LEVELA", NULL);
-	    else if (index == 1) mtbus_notify("MNU", "LEVELB", NULL);
-	    else if (index == 2)
-	    {
-		if (defaults.donation_arrived == 0)
-		{
-		    menu.state = MENU_STATE_SHOWPRICES;
-		    menu_redraw();
-		}
-		else mtbus_notify("MNU", "LEVELC", NULL);
-	    }
+	    if (index == 0) bus_notify("MNU", "LEVELA", NULL);
+	    else if (index == 1) bus_notify("MNU", "LEVELB", NULL);
+	    else if (index == 2) bus_notify("MNU", "LEVELC", NULL);
 	    else if (index == 3)
 	    {
 		menu.state = MENU_STATE_DEFAULT;
-		mtbus_notify("MNU", "RESETGAME", NULL);
+		bus_notify("MNU", "RESETGAME", NULL);
 	    }
-	    else if (index == 4) mtbus_notify("MNU", "EFFECTS", NULL);
-	    else if (index == 5) mtbus_notify("MNU", "FULLSCREEN", NULL);
-	    else if (index == 6) mtbus_notify("MNU", "HOMEPAGE", NULL);
-	    else if (index == 7) mtbus_notify("MNU", "EXIT", NULL);
-
-	    if (menu.state == MENU_STATE_SHOWPRICES)
-	    {
-		if (index == 8)
-		{
-		    mtbus_notify("MNU", "DONATE", defaults.prices[0]);
-		    menu.state = MENU_STATE_SHOWTHANKS;
-		    menu_redraw();
-		}
-		else if (index == 9)
-		{
-		    mtbus_notify("MNU", "DONATE", defaults.prices[1]);
-		    menu.state = MENU_STATE_SHOWTHANKS;
-		    menu_redraw();
-		}
-		else if (index == 10)
-		{
-		    mtbus_notify("MNU", "DONATE", defaults.prices[2]);
-		    menu.state = MENU_STATE_SHOWTHANKS;
-		    menu_redraw();
-		}
-	    }
-	    else if (menu.state == MENU_STATE_DEFAULT && defaults.prices_arrived == 1)
-	    {
-		if (index == 11)
-		{
-#ifdef RASPBERRY
-		    mtbus_notify("MNU", "DONATE", defaults.prices[2]);
-		    menu.state = MENU_STATE_SHOWTHANKS;
-#else
-		    menu.state = MENU_STATE_SHOWPRICES;
-#endif
-		    menu_redraw();
-		}
-	    }
+	    else if (index == 4) bus_notify("MNU", "EFFECTS", NULL);
+	    else if (index == 5) bus_notify("MNU", "FULLSCREEN", NULL);
+	    else if (index == 6) bus_notify("MNU", "HOMEPAGE", NULL);
+	    else if (index == 7) bus_notify("MNU", "EXIT", NULL);
+	    else if (index == 11) bus_notify("MNU", "DONATE", NULL);
 	}
     }
 }
@@ -634,7 +507,6 @@ void menu_touch_down(
 void menu_updatescale(
     void)
 {
-
     float scale = 1.0;
 
     float wthratio =
@@ -664,7 +536,6 @@ void menu_updatescale(
 void menu_updateperspective(
     void)
 {
-
     // calculate plane distance from focus point with simple trigonometry
 
     float camera_fov_y = M_PI / 4.0;
@@ -697,7 +568,6 @@ void menu_resize(
     float width,
     float height)
 {
-
     menu_updatescale();
     menu_updateperspective();
 
@@ -718,7 +588,6 @@ void menu_resize(
 void menu_update(
     float ratio)
 {
-
     if (defaults.state != kStateMenu) return;
 
     menu.angle += ratio * 0.5;
@@ -739,7 +608,7 @@ void menu_update(
     {
 
 	renderdata_t data = {0, menu.buffer};
-	mtbus_notify("SCN", "UPDBUFF", &data);
+	bus_notify("SCN", "UPDBUFF", &data);
 	menu.buffer->changed = 0;
     }
 
@@ -747,15 +616,15 @@ void menu_update(
     {
 
 	renderdata_t data = {3, menu.glowbuffer};
-	mtbus_notify("SCN", "UPDBUFF", &data);
+	bus_notify("SCN", "UPDBUFF", &data);
 	menu.glowbuffer->changed = 0;
     }
 
     renderdata_t d1 = {0, menu.buffer};
-    mtbus_notify("SCN", "UPDPRJ", &d1);
+    bus_notify("SCN", "UPDPRJ", &d1);
 
     renderdata_t d2 = {3, menu.glowbuffer};
-    mtbus_notify("SCN", "UPDPRJ", &d2);
+    bus_notify("SCN", "UPDPRJ", &d2);
 }
 
 /* update color for specific level */
@@ -764,7 +633,6 @@ void menu_set_color(
     v4_t  color,
     char* level)
 {
-
     if (strcmp(level, "levelA") == 0)
     {
 	defaults.color_a = menu_color_from_floats(color.x, color.y, color.z, color.w);
@@ -787,7 +655,6 @@ void menu_onmessage(
     const char* name,
     void*       data)
 {
-
     if (strcmp(name, "UPDATE") == 0)
     {
 
@@ -808,11 +675,6 @@ void menu_onmessage(
 	v2_t* dimensions = data;
 
 	menu_touch_down(dimensions->x, dimensions->y);
-    }
-    else if (strcmp(name, "SHOWDONATION") == 0)
-    {
-
-	menu_redraw();
     }
 }
 

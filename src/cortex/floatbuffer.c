@@ -1,29 +1,12 @@
+/* Float  collector for opengl vertex buffer */
 
 #ifndef floatbuffer_h
 #define floatbuffer_h
 
-#ifdef IOS
-    #import <OpenGLES/ES2/gl.h>
-    #import <OpenGLES/ES2/glext.h>
-#elif defined OSX
-    #include <OpenGL/gl3.h>
-    #include <OpenGL/gl3ext.h>
-#elif defined ANDROID
-    #include <EGL/egl.h>
-    #include <GLES/gl.h>
-#elif defined __linux__
+#include <GL/glew.h>
 
-    #include <GL/glew.h>
-
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#elif defined ASMJS
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-#elif defined __MINGW32__
-    #include <gl/gl.h>
-    #include <gl/glu.h>
-#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include "zc_util2.c"
 #include "zc_vec2.c"

@@ -1,31 +1,16 @@
+/* OpenGL functions */
+
 #ifndef ogl_h
-    #define ogl_h
+#define ogl_h
 
-    #include <stdint.h>
-    #include <stdio.h>
-    #include <stdlib.h>
-    #ifdef IOS
-	#import <OpenGLES/ES2/gl.h>
-	#import <OpenGLES/ES2/glext.h>
-    #elif defined OSX
-	#include <OpenGL/gl3.h>
-	#include <OpenGL/gl3ext.h>
-    #elif defined ANDROID
-	#include <EGL/egl.h>
-	#include <GLES2/gl2.h>
-    #elif defined __linux__
-	#include <GL/glew.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-    #elif defined WINDOWS
-	#define GLEW_STATIC
-	#include "GL/glew.h"
-    #endif
-#elif defined ASMJS
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-#endif
+#include <GL/glew.h>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 void   ogl_errors(const char* place);
 GLuint ogl_shader_create_from_file(const char* vertex_source, const char* fragment_source, const char** uniform_structure, const char** attribute_structure, GLint* uniform_locations);
@@ -55,12 +40,9 @@ void ogl_texture_update_rgba(GLint texture, GLint width, GLint height, uint8_t* 
 //    GLuint ogl_shader_create_blend( GLint* uniforms );
 //    GLuint ogl_shader_create_blur( GLint* uniforms );
 
-#if __INCLUDE_LEVEL__ == 0
+#endif
 
-    #if defined __linux__
-    //#include <GL/gl.h>
-    //#include <GL/glu.h>
-    #endif
+#if __INCLUDE_LEVEL__ == 0
 
 /* print opengl errors */
 
@@ -158,9 +140,9 @@ GLuint ogl_shader_create_from_file(const char* vertex_source, const char* fragme
 
     ogl_loadfile(fragment_source, fragment);
 
-    #ifdef DEBUG
+#ifdef DEBUG
 	// printf( "compiling %s and %s\n" , vertex_source , fragment_source );
-    #endif
+#endif
 
     return ogl_shader_create(vertex, fragment, uniform_structure, attribute_structure, uniform_locations);
 }
@@ -169,9 +151,9 @@ GLuint ogl_shader_create_from_file(const char* vertex_source, const char* fragme
 
 GLuint ogl_shader_create(const char* vertex_source, const char* fragment_source, const char** uniform_structure, const char** attribute_structure, GLint* uniform_locations)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_shader_create\n");
-    #endif
+#endif
 
     int uniform_locations_length   = atoi(uniform_structure[0]);
     int attribute_locations_length = atoi(attribute_structure[0]);
@@ -218,9 +200,9 @@ GLuint ogl_shader_create(const char* vertex_source, const char* fragment_source,
 	glDeleteShader(fragment_shader);
     }
 
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_shader_create\n");
-    #endif
+#endif
 
     return program;
 }
@@ -236,22 +218,22 @@ void ogl_shader_delete(GLuint program)
 
 void ogl_vertexbuffer(GLuint* buffername)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_vertexbuffer");
-    #endif
+#endif
     glGenBuffers(1, buffername);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_vertexbuffer");
-    #endif
+#endif
 }
 
 /* creates texture with linear filtering */
 
 void ogl_texture_create_linear(GLuint* texturename, GLsizei width, GLsizei height)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_texture_create_linear");
-    #endif
+#endif
 
     glGenTextures(1, texturename);
     glBindTexture(GL_TEXTURE_2D, *texturename);
@@ -262,18 +244,18 @@ void ogl_texture_create_linear(GLuint* texturename, GLsizei width, GLsizei heigh
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_texture_create_linear");
-    #endif
+#endif
 }
 
 /* creates texture with nearest filtering */
 
 void ogl_texture_create_nearest(GLuint* texturename, GLsizei width, GLsizei height)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_texture_create_nearest");
-    #endif
+#endif
 
     glGenTextures(1, texturename);
     glBindTexture(GL_TEXTURE_2D, *texturename);
@@ -284,18 +266,18 @@ void ogl_texture_create_nearest(GLuint* texturename, GLsizei width, GLsizei heig
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_texture_create_nearest");
-    #endif
+#endif
 }
 
 /* creates framebuffer backed by on given texture */
 
 void ogl_framebuffer_with_texture(GLuint* buffername, GLuint* texturename, GLuint* depthname, GLsizei width, GLsizei height)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_framebuffer_with_texture");
-    #endif
+#endif
 
     glGenTextures(1, texturename);
     glBindTexture(GL_TEXTURE_2D, *texturename);
@@ -321,18 +303,18 @@ void ogl_framebuffer_with_texture(GLuint* buffername, GLuint* texturename, GLuin
     if (status != GL_FRAMEBUFFER_COMPLETE) printf("Failed to create framebuffer at ogl_framebuffer_with_texture ");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_framebuffer_with_texture");
-    #endif
+#endif
 }
 
 /* draws a simple full cube for debug purposes */
 
 void ogl_test()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_drawcube");
-    #endif
+#endif
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -369,89 +351,89 @@ void ogl_test()
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 5, vertexes, GL_STATIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_drawcube");
-    #endif
+#endif
 }
 
 /* enables vertex arrays with 2 float 1 unsigned byte */
 
 void ogl_enableva_f2u1()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_enableva_f2u1");
-    #endif
+#endif
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 12, 0);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 12, (const GLvoid*) 8);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_enableva_f3u4");
-    #endif
+#endif
 }
 
 /* enables vertex arrays with 2 float 2 float */
 
 void ogl_enableva_f2f2()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_enableva_f2f2");
-    #endif
+#endif
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 16, 0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 16, (const GLvoid*) 8);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_enableva_f2f2");
-    #endif
+#endif
 }
 
 /* enables vertex arrays with 3 float 2 float */
 
 void ogl_enableva_f3f2()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_enableva_f3f2");
-    #endif
+#endif
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, 0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, (const GLvoid*) 12);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_enableva_f3f2");
-    #endif
+#endif
 }
 
 /* enables vertex arrays with 3 float 3 float */
 
 void ogl_enableva_f3f3()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_enableva_f3f3");
-    #endif
+#endif
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (const GLvoid*) 12);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_enableva_f3f3");
-    #endif
+#endif
 }
 
 /* enables vertex arrays with 3 float 4 unsigned */
 
 void ogl_enableva_f3u4()
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("before ogl_enableva_f3u4");
-    #endif
+#endif
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 16, 0);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 16, (const GLvoid*) 12);
-    #ifdef DEBUG
+#ifdef DEBUG
     ogl_errors("after ogl_enableva_f3u4");
-    #endif
+#endif
 }
 
 union colorfloat

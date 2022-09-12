@@ -1,3 +1,5 @@
+/* "Excavates" path from full width blocks */
+
 #ifndef excavator_h
 #define excavator_h
 
@@ -20,7 +22,6 @@
 typedef struct _excavator_t excavator_t;
 struct _excavator_t
 {
-
     short mode; // extracting mode
 
     short line_width;     // width of line
@@ -66,7 +67,6 @@ void excavator_destruct(
 excavator_t* excavator_alloc(
     int width)
 {
-
     excavator_t* result = CAL(
 	sizeof(excavator_t),
 	NULL,
@@ -94,7 +94,6 @@ void excavator_reset(
     excavator_t* excavator,
     int          width)
 {
-
     excavator->mode       = kExcavatorModeLinear;
     excavator->ext_width  = width;
     excavator->line_width = width;
@@ -115,7 +114,6 @@ void excavator_setmode(
     excavator_t* excavator,
     str_t*       string)
 {
-
     char* bytes = str_new_cstring(string);
 
     if (strcmp(bytes, "still") == 0) excavator->mode = kExcavatorModeStill;
@@ -131,7 +129,6 @@ void excavator_setmode(
 void excavator_update_size(
     excavator_t* data)
 {
-
     float delta;
 
     if (data->ext_width < data->new_line_width)
@@ -174,7 +171,6 @@ void excavator_update_size(
 void excavator_update_random(
     excavator_t* data)
 {
-
     float delta;
 
     data->eff_angle += (-5 + rand() % 10) * data->eff_diff;
@@ -204,7 +200,6 @@ void excavator_update_random(
 void excavator_update_wave(
     excavator_t* data)
 {
-
     float delta;
 
     data->eff_angle += data->eff_diff * 2;
@@ -233,7 +228,6 @@ void excavator_update_wave(
 void excavator_update_zigzag(
     excavator_t* data)
 {
-
     float newDiff;
 
     newDiff = (data->eff_diff / 2);
@@ -258,7 +252,6 @@ void excavator_update_zigzag(
 void excavator_update_string(
     excavator_t* data)
 {
-
     float pick;
 
     if (++data->eff_rnd_cnt == 10)
@@ -289,7 +282,6 @@ void excavator_update(
     excavator_t* data,
     char*        line)
 {
-
     int x, left, right;
 
     // update excavator based on mode

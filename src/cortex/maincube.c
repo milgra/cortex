@@ -1,3 +1,5 @@
+/* Main cube data */
+
 #ifndef maincube_h
 #define maincube_h
 
@@ -40,23 +42,17 @@ void maincube_reset(
     float position,
     float size)
 {
-
     voxel_t voxel =
 	{
-	    .model =
-		{
-		    0.0,
-		    position,
-		    -580.0,
-		    size,
-		    size,
-		    size},
+	    .model = {
+		0.0,
+		position,
+		-580.0,
+		size,
+		size,
+		size},
 
-	    .colors =
-		{
-		    0xFFFFFFFF,
-		    0xAAAAAAFF,
-		    0x555555FF}};
+	    .colors = {0xFFFFFFFF, 0xAAAAAAFF, 0x555555FF}};
 
     maincube.dir     = (v3_t){0};
     maincube.voxel   = voxel;
@@ -68,7 +64,6 @@ void maincube_set_direction(
     int   direction,
     float speed)
 {
-
     maincube.dir.x = (float) direction * speed;
 }
 
@@ -76,7 +71,6 @@ void maincube_update(
     float step,
     float position)
 {
-
     maincube.angle += .05 * step;
     if (maincube.angle > 2 * M_PI) maincube.angle -= 2 * M_PI;
 

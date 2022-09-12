@@ -1,9 +1,11 @@
+/* Script reader */
+
 #ifndef script_h
 #define script_h
 
+#include "bus.c"
 #include "generator.c"
 #include "maincube.c"
-#include "mtbus.c"
 #include "str_util.c"
 #include "zc_string.c"
 #include "zc_vector.c"
@@ -45,7 +47,6 @@ script_t script;
 void script_init(
     void)
 {
-
     script.list  = VNEW();
     script.label = NULL;
 }
@@ -53,14 +54,12 @@ void script_init(
 void script_free(
     void)
 {
-
     REL(script.list);
 }
 
 void script_reset(
     void)
 {
-
     vec_reset(script.list);
 
     script.index      = 0;
@@ -73,7 +72,6 @@ void script_reset(
 void script_load_item(
     uint32_t index)
 {
-
     if (script.list->length == 0) return;
 
     map_t* item = script.list->data[index];
@@ -83,7 +81,7 @@ void script_load_item(
     if (next != NULL)
     {
 
-	mtbus_notify(
+	bus_notify(
 	    "SCN",
 	    "NEXTSCENE",
 	    NULL);
@@ -141,7 +139,6 @@ void script_load_item(
 void script_load(
     char* descriptor)
 {
-
     str_t* string = str_frombytes(descriptor);
     vec_t* lines  = str_split(string, '\n');
 
@@ -165,7 +162,6 @@ void script_load(
 void script_update(
     uint32_t frame)
 {
-
     if (frame == script.frame_next)
     {
 

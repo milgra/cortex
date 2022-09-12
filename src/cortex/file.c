@@ -1,3 +1,5 @@
+/* Config file handling */
+
 #ifndef mtfile_h
 #define mtfile_h
 

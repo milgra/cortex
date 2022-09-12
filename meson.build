@@ -36,8 +36,7 @@ cortex_inc = include_directories(
 	'src/modules/utils')
 
 
-com_sources = ['src/cortex/bridge.c',
-	       'src/cortex/buffers.c',
+com_sources = ['src/cortex/buffers.c',
 	       'src/cortex/defaults.c',
 	       'src/cortex/excavator.c',
 	       'src/cortex/generator.c',
@@ -50,15 +49,12 @@ com_sources = ['src/cortex/bridge.c',
 	       'src/cortex/scene.c',
 	       'src/cortex/script.c',
 	       'src/cortex/voxel.c',
-	       'src/cortex/cmd.c',
 	       'src/cortex/floatbuffer.c',
 	       'src/cortex/ogl.c',
-	       'src/cortex/physics2.c',
 	       'src/cortex/pixeltext.c',
 	       'src/cortex/settings.c',
-	       'src/cortex/triangulate.c',
-	       'src/cortex/mtbus.c',
-	       'src/cortex/mtfile.c',
+	       'src/cortex/bus.c',
+	       'src/cortex/file.c',
 
 	       'src/modules/core/zc_cstring.c',
 	       'src/modules/core/zc_map.c',

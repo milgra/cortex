@@ -1,23 +1,12 @@
+/* OpenGL renderer */
+
 #ifndef renderer_h
 #define renderer_h
 
-#ifdef IOS
-    #import <OpenGLES/ES2/gl.h>
-    #import <OpenGLES/ES2/glext.h>
-#elif defined OSX
-    #include <OpenGL/gl3.h>
-    #include <OpenGL/gl3ext.h>
-#elif defined ANDROID
-    #include <EGL/egl.h>
-    #include <GLES/gl.h>
-#elif defined __linux__
-    #include "GL/glew.h"
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#elif defined WINDOWS
-    #define GLEW_STATIC
-    #include "GL/glew.h"
-#endif
+#include "GL/glew.h"
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include "defaults.c"
 #include "floatbuffer.c"
@@ -26,7 +15,6 @@
 
 typedef struct _renderdata_t
 {
-
     char           level;
     floatbuffer_t* buffer;
 
@@ -49,9 +37,9 @@ void renderer_reset_buffers(
 
 #if __INCLUDE_LEVEL__ == 0
 
+#include "bus.c"
 #include "defaults.c"
 #include "floatbuffer.c"
-#include "mtbus.c"
 #include "ogl.c"
 #include "voxel.c"
 #include <float.h>
@@ -167,7 +155,6 @@ void renderer_delete_framebuffers(
 void renderer_create_framebuffers(
     void)
 {
-
     float fulld = 1024;
     float glowd = 512;
     float blurd = 512;
@@ -205,10 +192,9 @@ void renderer_init(
     GLuint defFrameBuffer,
     GLuint defRenderBuffer)
 {
-
-    mtbus_subscribe("CTL", renderer_onmessage);
-    mtbus_subscribe("SCN", renderer_onmessage);
-    mtbus_subscribe("MNU", renderer_onmessage);
+    bus_subscribe("CTL", renderer_onmessage);
+    bus_subscribe("SCN", renderer_onmessage);
+    bus_subscribe("MNU", renderer_onmessage);
 
     memset(rnd.vbos, 0, sizeof(GLuint) * 32);
 
@@ -257,7 +243,6 @@ void renderer_free(
 void renderer_reset_buffers(
     void)
 {
-
     for (int index = 0;
 	 index < 32;
 	 index++)
@@ -273,7 +258,6 @@ void renderer_update_buffer(
     m4_t     projection,
     int      level)
 {
-
     if (rnd.vbos[level] == 0)
     {
 	GLuint name;
@@ -298,14 +282,12 @@ void renderer_update_matrix(
     m4_t projection,
     int  level)
 {
-
     rnd.projections[level] = projection;
 }
 
 void renderer_draw_unit_quad(
     void)
 {
-
     GLfloat vertexes[] =
 	{
 
@@ -335,7 +317,6 @@ void renderer_render_scene(
     int* levelmap,
     int* drawmap)
 {
-
     for (int index = 0;
 	 index < levelmap[0];
 	 index++)
@@ -582,7 +563,6 @@ void renderer_render(
 void renderer_resize(
     void* data)
 {
-
     v2_t* newdimensions = data;
 
     rnd.width  = newdimensions->x;
@@ -592,7 +572,6 @@ void renderer_resize(
 void renderer_set_detail(
     void)
 {
-
     renderer_delete_framebuffers();
     renderer_create_framebuffers();
 }
@@ -601,7 +580,6 @@ void renderer_onmessage(
     const char* name,
     void*       data)
 {
-
     if (strcmp(name, "UPDBUFF") == 0)
     {
 

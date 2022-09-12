@@ -1,3 +1,5 @@
+/* Settings and defaults */
+
 #ifndef defaults_h
 #define defaults_h
 
@@ -14,7 +16,6 @@
 
 typedef struct _defaults_t
 {
-
     char stage_a;
     char stage_b;
     char stage_c;
@@ -35,11 +36,6 @@ typedef struct _defaults_t
     v2_t display_size;
 
     float text_scale;
-
-    char donation_arrived; // purchased items arrived from the store
-    char prices_arrived;   // prices arrived for store items
-    char prices[3][100];
-
 } defaults_t;
 
 extern defaults_t defaults;
@@ -65,7 +61,6 @@ defaults_t defaults = {0};
 void defaults_init(
     void)
 {
-
     int inited = settings_getint("initialized");
 
     if (inited == 0)
@@ -78,12 +73,7 @@ void defaults_init(
 	    "donation_arrived",
 	    0);
 
-	defaults.donation_arrived = 0;
-	defaults.effects_level    = 2;
-
-#ifdef RASPBERRY
-	defaults.effects_level = 0;
-#endif
+	defaults.effects_level = 2;
 
 	settings_setint(
 	    "levelA",
@@ -111,9 +101,7 @@ void defaults_init(
     }
     else
     {
-
-	defaults.effects_level    = settings_getint("effects_level");
-	defaults.donation_arrived = settings_getint("donation_arrived");
+	defaults.effects_level = settings_getint("effects_level");
     }
 
     defaults.currentlevel = "levelA";
@@ -131,7 +119,6 @@ void defaults_init(
 
 void defaults_reset()
 {
-
     defaults.stage_a = 0;
     defaults.stage_b = 0;
     defaults.stage_c = 0;
@@ -173,7 +160,6 @@ void defaults_reset()
 
 void defaults_save()
 {
-
     if (strcmp(defaults.currentlevel, "levelA") == 0) defaults.stage_a = defaults.currentstage;
     if (strcmp(defaults.currentlevel, "levelB") == 0) defaults.stage_b = defaults.currentstage;
     if (strcmp(defaults.currentlevel, "levelC") == 0) defaults.stage_c = defaults.currentstage;
@@ -205,10 +191,6 @@ void defaults_save()
     settings_setint(
 	"effects_level",
 	defaults.effects_level);
-
-    settings_setint(
-	"donation_arrived",
-	defaults.donation_arrived);
 }
 
 #endif

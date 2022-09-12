@@ -1,3 +1,5 @@
+/* Scene generator */
+
 #ifndef scene_h
 #define scene_h
 
@@ -18,7 +20,6 @@
 typedef struct _scene_loadmsg_t scene_loadmsg_t;
 struct _scene_loadmsg_t
 {
-
     float speed;
     char  stage;
 };
@@ -26,7 +27,6 @@ struct _scene_loadmsg_t
 typedef struct _scene_t scene_t;
 struct _scene_t
 {
-
     char* stages[8];
 
     /* states */
@@ -89,7 +89,7 @@ extern scene_t scene;
 
 #include <string.h>
 
-#include "mtbus.c"
+#include "bus.c"
 #include "pixeltext.c"
 #include "zc_cstring.c"
 #include "zc_memory.c"
@@ -121,8 +121,7 @@ void scene_init(
     float width,
     float height)
 {
-
-    mtbus_subscribe(
+    bus_subscribe(
 	"CTL",
 	scene_onmessage);
 
@@ -174,7 +173,6 @@ void scene_init(
 void scene_free(
     void)
 {
-
     REL(scene.shards);
     REL(scene.sparks);
 
@@ -191,7 +189,6 @@ void scene_free(
 void scene_reset(
     void)
 {
-
     vec_reset(scene.sparks);
     vec_reset(scene.shards);
 
@@ -231,7 +228,6 @@ void scene_reset(
 void scene_collectvoxels(
     int row)
 {
-
     for (int col = 0;
 	 col < COLCOUNT;
 	 col++)
@@ -285,7 +281,6 @@ void scene_collectvoxels(
 void scene_fillbuffer_iteration(
     void)
 {
-
     if (scene.generator_run == 1)
     {
 
@@ -318,7 +313,6 @@ void scene_fillbuffer_iteration(
 void scene_swapsegments(
     void)
 {
-
     /* switch segment and buffer */
 
     scene.segmentstartindex = ROWCOUNT - scene.segmentstartindex;
@@ -360,7 +354,6 @@ void scene_swapsegments(
 void scene_setup_sparks(
     char right)
 {
-
     float x     = maincube.voxel.model.x + maincube.voxel.model.w * (float) right;
     float speed = 1.0 - 2.0 * (float) right;
 
@@ -398,16 +391,14 @@ void scene_setup_sparks(
 void scene_setup_explosion(
     void)
 {
-
     // generate encouraging text
 
-    char* texts[] =
-	{
-	    "NEVER GIVE UP!!!",
-	    "COME ON!!!",
-	    "CONCENTRATE!!!",
-	    "KEEP CALM!!!",
-	    "FEEL THE FLOW!!!"};
+    char* texts[] = {
+	"NEVER GIVE UP!!!",
+	"COME ON!!!",
+	"CONCENTRATE!!!",
+	"KEEP CALM!!!",
+	"FEEL THE FLOW!!!"};
 
     REL(script.label);
 
@@ -417,7 +408,7 @@ void scene_setup_explosion(
 
     // play sound
 
-    mtbus_notify("SCN", "EXPLOSION", NULL);
+    bus_notify("SCN", "EXPLOSION", NULL);
 
     // new shard particles from blocks
 
@@ -425,12 +416,10 @@ void scene_setup_explosion(
 	 row < ROWCOUNT * 2;
 	 row++)
     {
-
 	for (int col = 0;
 	     col < COLCOUNT;
 	     col++)
 	{
-
 	    float dx = -0.5 + (float) (rand() % 10) / 10.0;
 	    float dy = 0.5 + (float) (rand() % 10) / 10.0;
 	    float dz = -0.5 + (float) (rand() % 10) / 10.0;
@@ -439,7 +428,6 @@ void scene_setup_explosion(
 
 	    if (voxel.model.z > -601.0)
 	    {
-
 		// create white top
 
 		voxel_t white   = voxel;
@@ -474,12 +462,10 @@ void scene_setup_explosion(
 	 row < ROWCOUNT * 2;
 	 row++)
     {
-
 	for (int col = 0;
 	     col < 2;
 	     col++)
 	{
-
 	    float dx = -0.5 + (float) (rand() % 10) / 10.0;
 	    float dy = 0.5 + (float) (rand() % 10) / 10.0;
 	    float dz = -0.5 + (float) (rand() % 10) / 10.0;
@@ -500,7 +486,6 @@ void scene_setup_explosion(
 	 index < scene.sparks->length;
 	 index++)
     {
-
 	particle_t* particle = scene.sparks->data[index];
 
 	particle->dir.x = -0.5 + (float) (rand() % 10) / 10.0;
@@ -540,7 +525,6 @@ void scene_label(
     float          z,
     floatbuffer_t* buffer)
 {
-
     v2_t textsize = pixeltext_calcsize(label, size);
 
     x -= textsize.x / 2.0;
@@ -574,12 +558,10 @@ void scene_label(
 void scene_generate_labels(
     void)
 {
-
     floatbuffer_reset(buffers.buffertext);
 
     if (script.label != NULL)
     {
-
 	scene_label(
 	    script.label,
 	    0xFFFFFFFF,
@@ -592,7 +574,6 @@ void scene_generate_labels(
 
     if (scene.timer >= 0)
     {
-
 	char text[10];
 	snprintf(text, 10, "%i", scene.timer);
 
@@ -612,7 +593,6 @@ void scene_generate_labels(
 void scene_check_collision(
     void)
 {
-
     int cursorrow = (int) ceilf(-(-scene.headposition + PLAYCUBEY) / BLOCKSIZE);
     int cursorcol = (int) roundf((maincube.voxel.model.x + HALFSCENE) / BLOCKSIZE);
 
@@ -625,7 +605,6 @@ void scene_check_collision(
 
     if (scene.segments[0][0].model.y >= -scene.headposition + PLAYCUBEY)
     {
-
 	upperrow = (int) floorf(-scene.segments[0][0].model.y / BLOCKSIZE);
 	rowindex = cursorrow - upperrow;
 	cube     = scene.segments[rowindex][cursorcol];
@@ -638,7 +617,6 @@ void scene_check_collision(
 
     if (scene.segments[ROWCOUNT][0].model.y >= -scene.headposition + PLAYCUBEY)
     {
-
 	upperrow = (int) floorf(-scene.segments[ROWCOUNT][0].model.y / BLOCKSIZE);
 	rowindex = cursorrow - upperrow;
 
@@ -662,7 +640,6 @@ void scene_check_collision(
 void scene_load(
     char* data)
 {
-
     scene_loadmsg_t* msg = (scene_loadmsg_t*) data;
 
     // reset if level changed
@@ -698,7 +675,6 @@ void scene_load(
 void scene_updatealive(
     float step)
 {
-
     // update script
 
     if (scene.state == STATE_ALIVE) script_update(scene.frame);
@@ -810,7 +786,6 @@ void scene_updatealive(
 void scene_updatedead(
     float step)
 {
-
     /* scatter blocks if collision */
 
     buffers_resetscene();
@@ -869,7 +844,6 @@ void scene_updatedead(
 void scene_update(
     void* data)
 {
-
     if (defaults.state != kStateGame) return;
 
     float ratio = *(float*) data;
@@ -902,7 +876,6 @@ void scene_update(
 void scene_updatescale(
     void)
 {
-
     float scale = 1.0;
 
     float wthratio   = defaults.display_size.x / WIDTH;
@@ -921,7 +894,6 @@ void scene_updatescale(
 void scene_updateperspective(
     void)
 {
-
     // calculate plane distance from focus point with simple trigonometry
 
     float camera_fov_y = M_PI / 4.0;
@@ -966,7 +938,6 @@ void scene_updateperspective(
 void scene_resize(
     void* data)
 {
-
     scene_updatescale();
     scene_updateperspective();
 
@@ -993,7 +964,6 @@ void scene_resize(
 void scene_touch_down(
     void* data)
 {
-
     v2_t coord = *(v2_t*) data;
 
     if (defaults.state == kStateGame)
@@ -1004,7 +974,7 @@ void scene_touch_down(
 	{
 
 	    scene.speed = 0.0;
-	    mtbus_notify(
+	    bus_notify(
 		"SCN",
 		"OPENMENU",
 		NULL);
@@ -1034,7 +1004,6 @@ void scene_touch_down(
 void scene_touch_up(
     void* data)
 {
-
     v2_t coord = *(v2_t*) data;
 
     if (coord.x < defaults.display_size.x / 2.0)
@@ -1060,7 +1029,6 @@ void scene_touch_up(
 void scene_key_down(
     void* data)
 {
-
     SDL_Keycode code = *(SDL_Keycode*) data;
 
     if (code == SDLK_LEFT)
@@ -1086,7 +1054,6 @@ void scene_key_down(
 void scene_key_up(
     void* data)
 {
-
     SDL_Keycode code = *(SDL_Keycode*) data;
 
     if (code == SDLK_LEFT)
@@ -1113,7 +1080,6 @@ void scene_onmessage(
     const char* name,
     void*       data)
 {
-
     if (strcmp(name, "UPDATE") == 0) scene_update(data);
     else if (strcmp(name, "RESIZE") == 0) scene_resize(data);
     else if (strcmp(name, "TOUCHDOWN") == 0) scene_touch_down(data);

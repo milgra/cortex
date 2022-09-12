@@ -1,3 +1,5 @@
+/* Particles for particle generator */
+
 #ifndef particle_h
 #define particle_h
 
@@ -6,7 +8,6 @@
 
 typedef struct _particle_t
 {
-
     v3_t    dir;
     char    finished;
     voxel_t model;
@@ -29,7 +30,6 @@ particle_t* particle_create(
     voxel_t voxel,
     v3_t    direction)
 {
-
     particle_t* particle = CAL(
 	sizeof(particle_t),
 	NULL,
@@ -45,7 +45,6 @@ void particle_update(
     particle_t* particle,
     float       ratio)
 {
-
     particle->model.model.x += particle->dir.x * ratio;
     particle->model.model.y += particle->dir.y * ratio;
     particle->model.model.z += particle->dir.z * ratio;

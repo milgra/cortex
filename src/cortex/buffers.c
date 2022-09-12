@@ -1,3 +1,5 @@
+/* Vertex buffers for different layers of the scene */
+
 #ifndef buffers_h
 #define buffers_h
 
@@ -48,14 +50,13 @@ void buffers_resetscene(
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtbus.c"
+#include "bus.c"
 
 buffers_t buffers;
 
 void buffers_init(
     void)
 {
-
     buffers.buffera = floatbuffer_alloc();
     buffers.bufferb = floatbuffer_alloc();
 
@@ -72,7 +73,6 @@ void buffers_init(
 void buffers_free(
     void)
 {
-
     REL(buffers.buffera);
     REL(buffers.bufferb);
 
@@ -89,7 +89,6 @@ void buffers_free(
 void buffers_reset(
     void)
 {
-
     floatbuffer_reset(buffers.buffera);
     floatbuffer_reset(buffers.bufferb);
 
@@ -106,7 +105,6 @@ void buffers_reset(
 void buffers_resetscene(
     void)
 {
-
     floatbuffer_reset(buffers.buffera);
     floatbuffer_reset(buffers.bufferb);
 
@@ -122,19 +120,14 @@ void buffers_uploadbuffer(
     floatbuffer_t* buffer,
     int            level)
 {
-
     if (buffer->changed == 1)
     {
 
-	renderdata_t data =
-	    {
+	renderdata_t data = {
+	    level,
+	    buffer};
 
-		level,
-		buffer
-
-	    };
-
-	mtbus_notify(
+	bus_notify(
 	    "SCN",
 	    "UPDBUFF",
 	    &data);
@@ -158,7 +151,7 @@ void buffers_updatematrix(
 
 	};
 
-    mtbus_notify(
+    bus_notify(
 	"SCN",
 	"UPDPRJ",
 	&data);

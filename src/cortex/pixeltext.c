@@ -1,3 +1,5 @@
+/* Pixel text generator */
+
 #ifndef pixeltext_h
 #define pixeltext_h
 

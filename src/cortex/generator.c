@@ -1,3 +1,5 @@
+/* Level generator, generates blocks in two switching fixed height segments */
+
 #ifndef generator_h
 #define generator_h
 
@@ -15,7 +17,6 @@
 typedef struct _generator_t generator_t;
 struct _generator_t
 {
-
     voxel_t prevlinecubes[COLCOUNT]; // stores generated cubes for the last generated line
     char    prevlinechars[COLCOUNT]; // stores last generated line info ( char string (
 
@@ -62,7 +63,6 @@ generator_t generator;
 void generator_init(
     void)
 {
-
     generator.excavator_a = excavator_alloc(COLCOUNT);
     generator.excavator_b = excavator_alloc(COLCOUNT);
     generator.excavator_c = excavator_alloc(COLCOUNT);
@@ -72,7 +72,6 @@ void generator_init(
 void generator_free(
     void)
 {
-
     REL(generator.excavator_a);
     REL(generator.excavator_b);
     REL(generator.excavator_c);
@@ -82,7 +81,6 @@ void generator_free(
 void generator_reset(
     void)
 {
-
     excavator_reset(generator.excavator_a, COLCOUNT);
     excavator_reset(generator.excavator_b, COLCOUNT);
     excavator_reset(generator.excavator_c, COLCOUNT);
@@ -107,7 +105,6 @@ void generator_reset(
 void generator_setup(
     map_t* settings)
 {
-
     str_t* red = MGET(
 	settings,
 	"red");
@@ -208,7 +205,6 @@ float generator_generatez(
     float prevlinecubez,
     float prevcubez)
 {
-
     float z = -3000.0;
 
     if (edge)
