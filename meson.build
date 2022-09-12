@@ -52,7 +52,7 @@ com_sources = ['src/cortex/bridge.c',
 	       'src/cortex/voxel.c',
 
 	       'src/modules/core/mtbus.c',
-	       'src/modules/core/mtcstr.c',
+	       'src/modules/core/zc_cstring.c',
 	       'src/modules/core/mtfile.c',
 	       'src/modules/core/zc_map.c',
 	       'src/modules/core/zc_memory.c',

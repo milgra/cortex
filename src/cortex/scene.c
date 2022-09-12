@@ -90,8 +90,8 @@ extern scene_t scene;
 #include <string.h>
 
 #include "mtbus.c"
-#include "mtcstr.c"
 #include "pixeltext.c"
+#include "zc_cstring.c"
 #include "zc_memory.c"
 
 #include "SDL.h"
@@ -411,7 +411,7 @@ void scene_setup_explosion(
 
     REL(script.label);
 
-    script.label = mtcstr_fromcstring(texts[rand() % 4]);
+    script.label = cstr_new_cstring(texts[rand() % 4]);
 
     scene_generate_labels();
 

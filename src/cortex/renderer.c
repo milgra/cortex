@@ -52,7 +52,6 @@ void renderer_reset_buffers(
 #include "defaults.c"
 #include "floatbuffer.c"
 #include "mtbus.c"
-#include "mtcstr.c"
 #include "ogl.c"
 #include "voxel.c"
 #include <float.h>

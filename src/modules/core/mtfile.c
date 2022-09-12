@@ -2,6 +2,7 @@
 #define mtfile_h
 
 #include "str_util.c"
+#include "zc_cstring.c"
 #include "zc_map.c"
 #include "zc_string.c"
 #include <errno.h>
@@ -37,7 +38,6 @@ type_container_t* mtfile_defaultcontainer(char type, void* data);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtcstr.c"
 #include "zc_memory.c"
 #include <string.h>
 
@@ -319,7 +319,7 @@ vec_t* mtfile_readlines(char* path)
 		if (nextbyte != '\n') string[index++] = (char) nextbyte;
 		else
 		{
-		    char* copy = mtcstr_fromcstring(string);
+		    char* copy = cstr_new_cstring(string);
 		    VADD(result, copy);
 		    REL(copy);
 		    memset(string, 0, 100);

@@ -7,12 +7,13 @@
 #include "bridge.h"
 #include "cmd.c"
 #include "defaults.c"
+#include "linux/limits.h"
 #include "menu.c"
 #include "mtbus.c"
-#include "mtcstr.c"
 #include "renderer.c"
 #include "scene.c"
 #include "settings.c"
+#include "zc_cstring.c"
 
 float scale = 1.0;
 
@@ -319,17 +320,20 @@ void main_init(
 	width * scale,
 	height * scale);
 
-    char* gamesndpath = mtcstr_fromformat(
+    char* gamesndpath = cstr_new_format(
+	PATH_MAX,
 	"%sgame.wav",
 	respath,
 	NULL);
 
-    char* breaksndpath = mtcstr_fromformat(
+    char* breaksndpath = cstr_new_format(
+	PATH_MAX,
 	"%sbreak.wav",
 	respath,
 	NULL);
 
-    char* outrosndpath = mtcstr_fromformat(
+    char* outrosndpath = cstr_new_format(
+	PATH_MAX,
 	"%soutro.wav",
 	respath,
 	NULL);

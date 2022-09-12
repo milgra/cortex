@@ -32,7 +32,8 @@ uint32_t          settings_getunsigned(const char* key);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtcstr.c"
+#include "linux/limits.h"
+#include "zc_cstring.c"
 #include "zc_memory.c"
 
 /* creates settings */
@@ -41,7 +42,7 @@ settings_t settings;
 
 void settings_init(const char* path, char* name)
 {
-    settings.path    = mtcstr_fromformat("%s%s", path, name, NULL);
+    settings.path    = cstr_new_format(PATH_MAX, "%s%s", path, name, NULL);
     settings.map     = mtfile_readfile(settings.path);
     settings.changed = 0;
 

@@ -38,7 +38,7 @@ void        cmdqueue_reset(cmdqueue_t* queue);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "../core/mtcstr.c"
+#include "zc_cstring.c"
 #include "zc_memory.c"
 #include <string.h>
 
@@ -49,7 +49,7 @@ cmd_t* cmd_alloc(char* name, void* data, void* args)
     assert(name != NULL);
     cmd_t* cmd = CAL(sizeof(cmd_t), cmd_dealloc, NULL);
 
-    cmd->name = mtcstr_fromcstring(name);
+    cmd->name = cstr_new_cstring(name);
     cmd->data = RET(data);
     cmd->args = RET(args);
 
