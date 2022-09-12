@@ -55,6 +55,7 @@ extern generator_t generator;
 generator_t generator;
 
 #include "generator.c"
+#include "zc_string.c"
 #include <string.h>
 
 void generator_init(
@@ -106,75 +107,75 @@ void generator_setup(
     map_t* settings)
 {
 
-    mtstr_t* red = MGET(
+    str_t* red = MGET(
 	settings,
 	"red");
 
-    mtstr_t* blue = MGET(
+    str_t* blue = MGET(
 	settings,
 	"blue");
 
-    mtstr_t* green = MGET(
+    str_t* green = MGET(
 	settings,
 	"green");
 
-    mtstr_t* diffA = MGET(
+    str_t* diffA = MGET(
 	settings,
 	"diffA");
 
-    mtstr_t* diffB = MGET(
+    str_t* diffB = MGET(
 	settings,
 	"diffB");
 
-    mtstr_t* diffC = MGET(
+    str_t* diffC = MGET(
 	settings,
 	"diffC");
 
-    mtstr_t* diffD = MGET(
+    str_t* diffD = MGET(
 	settings,
 	"diffD");
 
-    mtstr_t* sizeA = MGET(
+    str_t* sizeA = MGET(
 	settings,
 	"widthA");
 
-    mtstr_t* sizeB = MGET(
+    str_t* sizeB = MGET(
 	settings,
 	"widthB");
 
-    mtstr_t* sizeC = MGET(
+    str_t* sizeC = MGET(
 	settings,
 	"widthC");
 
-    mtstr_t* sizeD = MGET(
+    str_t* sizeD = MGET(
 	settings,
 	"widthD");
 
-    mtstr_t* modeA = MGET(
+    str_t* modeA = MGET(
 	settings,
 	"modeA");
 
-    mtstr_t* modeB = MGET(
+    str_t* modeB = MGET(
 	settings,
 	"modeB");
 
-    mtstr_t* modeC = MGET(
+    str_t* modeC = MGET(
 	settings,
 	"modeC");
 
-    mtstr_t* modeD = MGET(
+    str_t* modeD = MGET(
 	settings,
 	"modeD");
 
-    if (diffA != NULL) generator.excavator_a->eff_diff = mtstr_floatvalue(diffA);
-    if (diffB != NULL) generator.excavator_b->eff_diff = mtstr_floatvalue(diffB);
-    if (diffC != NULL) generator.excavator_c->eff_diff = mtstr_floatvalue(diffC);
-    if (diffD != NULL) generator.excavator_d->eff_diff = mtstr_floatvalue(diffD);
+    if (diffA != NULL) generator.excavator_a->eff_diff = str_floatvalue(diffA);
+    if (diffB != NULL) generator.excavator_b->eff_diff = str_floatvalue(diffB);
+    if (diffC != NULL) generator.excavator_c->eff_diff = str_floatvalue(diffC);
+    if (diffD != NULL) generator.excavator_d->eff_diff = str_floatvalue(diffD);
 
-    if (sizeA != NULL) generator.excavator_a->new_line_width = mtstr_intvalue(sizeA);
-    if (sizeB != NULL) generator.excavator_b->new_line_width = mtstr_intvalue(sizeB);
-    if (sizeC != NULL) generator.excavator_c->new_line_width = mtstr_intvalue(sizeC);
-    if (sizeD != NULL) generator.excavator_d->new_line_width = mtstr_intvalue(sizeD);
+    if (sizeA != NULL) generator.excavator_a->new_line_width = str_intvalue(sizeA);
+    if (sizeB != NULL) generator.excavator_b->new_line_width = str_intvalue(sizeB);
+    if (sizeC != NULL) generator.excavator_c->new_line_width = str_intvalue(sizeC);
+    if (sizeD != NULL) generator.excavator_d->new_line_width = str_intvalue(sizeD);
 
     if (modeA != NULL) excavator_setmode(
 	generator.excavator_a,
@@ -192,9 +193,9 @@ void generator_setup(
 	generator.excavator_d,
 	modeD);
 
-    if (red != NULL) generator.newcolor.x = mtstr_floatvalue(red);
-    if (blue != NULL) generator.newcolor.z = mtstr_floatvalue(blue);
-    if (green != NULL) generator.newcolor.y = mtstr_floatvalue(green);
+    if (red != NULL) generator.newcolor.x = str_floatvalue(red);
+    if (blue != NULL) generator.newcolor.z = str_floatvalue(blue);
+    if (green != NULL) generator.newcolor.y = str_floatvalue(green);
 }
 
 /* generates z value based on surrounding z values */

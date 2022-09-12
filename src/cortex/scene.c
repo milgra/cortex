@@ -91,7 +91,6 @@ extern scene_t scene;
 
 #include "mtbus.c"
 #include "mtcstr.c"
-#include "mtstr.c"
 #include "pixeltext.c"
 #include "zc_memory.c"
 

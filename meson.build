@@ -32,7 +32,8 @@ cortex_inc = include_directories(
 	'src/cortex',
 	'src/modules',
 	'src/modules/core',
-	'src/modules/tools')
+	'src/modules/tools',
+	'src/modules/utils')
 
 
 com_sources = ['src/cortex/bridge.c',
@@ -56,8 +57,10 @@ com_sources = ['src/cortex/bridge.c',
 	       'src/modules/core/zc_map.c',
 	       'src/modules/core/zc_memory.c',
 	       'src/modules/core/mtpipe.c',
-	       'src/modules/core/mtstr.c',
+	       'src/modules/core/zc_string.c',
 	       'src/modules/core/zc_vector.c',
+
+	       'src/modules/utils/str_util.c',
 
 	       'src/modules/tools/cmd.c',
 	       'src/modules/tools/floatbuffer.c',

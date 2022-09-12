@@ -4,7 +4,8 @@
 #include "generator.c"
 #include "maincube.c"
 #include "mtbus.c"
-#include "mtstr.c"
+#include "str_util.c"
+#include "zc_string.c"
 #include "zc_vector.c"
 
 typedef struct _script_t script_t;
@@ -77,7 +78,7 @@ void script_load_item(
 
     map_t* item = script.list->data[index];
 
-    mtstr_t* next = MGET(item, "next");
+    str_t* next = MGET(item, "next");
 
     if (next != NULL)
     {
@@ -91,7 +92,7 @@ void script_load_item(
 
     generator_setup(item);
 
-    mtstr_t* label = MGET(item, "label");
+    str_t* label = MGET(item, "label");
 
     if (label != NULL)
     {
@@ -109,7 +110,7 @@ void script_load_item(
 	}
 
 	REL(script.label);
-	script.label = mtstr_bytes(label);
+	script.label = str_new_cstring(label);
     }
     else
     {
@@ -119,7 +120,7 @@ void script_load_item(
 
     // cube
 
-    mtstr_t* cube = MGET(item, "cube");
+    str_t* cube = MGET(item, "cube");
 
     if (cube != NULL)
     {
@@ -131,9 +132,9 @@ void script_load_item(
 
     if (index + 1 < script.list->length)
     {
-	map_t*   nextline   = script.list->data[index + 1];
-	mtstr_t* frametoken = MGET(nextline, "frame");
-	if (frametoken != NULL) script.frame_next = mtstr_intvalue(frametoken);
+	map_t* nextline   = script.list->data[index + 1];
+	str_t* frametoken = MGET(nextline, "frame");
+	if (frametoken != NULL) script.frame_next = str_intvalue(frametoken);
     }
 }
 
@@ -141,16 +142,16 @@ void script_load(
     char* descriptor)
 {
 
-    mtstr_t* string = mtstr_frombytes(descriptor);
-    vec_t*   lines  = mtstr_split(string, '\n');
+    str_t* string = str_frombytes(descriptor);
+    vec_t* lines  = str_split(string, '\n');
 
     for (int lineindex = 0;
 	 lineindex < lines->length;
 	 lineindex++)
     {
 
-	mtstr_t* line = lines->data[lineindex];
-	map_t*   map  = mtstr_tokenize(line);
+	str_t* line = lines->data[lineindex];
+	map_t* map  = str_tokenize(line);
 	vec_add(script.list, map);
 	REL(map);
     }

@@ -1,8 +1,9 @@
 #ifndef mtfile_h
 #define mtfile_h
 
-#include "mtstr.c"
+#include "str_util.c"
 #include "zc_map.c"
+#include "zc_string.c"
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -20,14 +21,14 @@ struct type_container_t
     void* data;
 };
 
-void     mtfile_writetofile(map_t* map, char* path);
-map_t*   mtfile_readfile(char* path);
-void     mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer);
-void     mtfile_appendvectortofile(vec_t* vector, FILE* file_pointer);
-void     mtfile_appendmaptofile(map_t* map, FILE* file_pointer);
-map_t*   mtfile_readmap(FILE* file_pointer);
-mtstr_t* mtfile_readstring(FILE* file_pointer);
-vec_t*   mtfile_readvector(FILE* file_pointer);
+void   mtfile_writetofile(map_t* map, char* path);
+map_t* mtfile_readfile(char* path);
+void   mtfile_appendstringtofile(str_t* string, FILE* file_pointer);
+void   mtfile_appendvectortofile(vec_t* vector, FILE* file_pointer);
+void   mtfile_appendmaptofile(map_t* map, FILE* file_pointer);
+map_t* mtfile_readmap(FILE* file_pointer);
+str_t* mtfile_readstring(FILE* file_pointer);
+vec_t* mtfile_readvector(FILE* file_pointer);
 
 vec_t*            mtfile_readlines(char* path);
 type_container_t* mtfile_defaultcontainer(char type, void* data);
@@ -42,7 +43,7 @@ type_container_t* mtfile_defaultcontainer(char type, void* data);
 
 /* appends string to opened file */
 
-void mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer)
+void mtfile_appendstringtofile(str_t* string, FILE* file_pointer)
 {
     // write type
 
@@ -52,7 +53,7 @@ void mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer)
 
     // write bytes
 
-    char* bytes = mtstr_bytes(string);
+    char* bytes = str_new_cstring(string);
     writeup     = fwrite(bytes, sizeof(uint8_t), string->length_bytes, file_pointer);
 
     // write closing 0
@@ -106,7 +107,7 @@ void mtfile_appendmaptofile(map_t* map, FILE* file_pointer)
 
 	if (container != NULL)
 	{
-	    mtstr_t* keystring = mtstr_frombytes(keys->data[index]);
+	    str_t* keystring = str_frombytes(keys->data[index]);
 	    mtfile_appendstringtofile(keystring, file_pointer);
 	    REL(keystring);
 
@@ -148,7 +149,7 @@ void mtfile_writetofile(map_t* map, char* path)
 
 /* reads string from file */
 
-mtstr_t* mtfile_readstring(FILE* file_pointer)
+str_t* mtfile_readstring(FILE* file_pointer)
 {
     char* bytes = CAL(sizeof(char) * 50, NULL, NULL);
 
@@ -168,7 +169,7 @@ mtstr_t* mtfile_readstring(FILE* file_pointer)
     }
     bytes[index++] = 0;
 
-    mtstr_t* result = mtstr_frombytes(bytes);
+    str_t* result = str_frombytes(bytes);
     REL(bytes);
     return result;
 }
@@ -202,7 +203,7 @@ vec_t* mtfile_readvector(FILE* file_pointer)
 	}
 	else if (nextbyte == kTypeString)
 	{
-	    mtstr_t*          string    = mtfile_readstring(file_pointer);
+	    str_t*            string    = mtfile_readstring(file_pointer);
 	    type_container_t* container = CAL(sizeof(type_container_t), NULL, NULL);
 	    container->type             = kTypeString;
 	    container->data             = string;
@@ -227,8 +228,8 @@ map_t* mtfile_readmap(FILE* file_pointer)
     {
 	// read key
 
-	mtstr_t* key        = mtfile_readstring(file_pointer);
-	char*    keycstring = mtstr_bytes(key);
+	str_t* key        = mtfile_readstring(file_pointer);
+	char*  keycstring = str_new_cstring(key);
 
 	// read value
 
@@ -251,7 +252,7 @@ map_t* mtfile_readmap(FILE* file_pointer)
 	}
 	else if (nextbyte == kTypeString)
 	{
-	    mtstr_t*          string    = mtfile_readstring(file_pointer);
+	    str_t*            string    = mtfile_readstring(file_pointer);
 	    type_container_t* container = mtfile_defaultcontainer(kTypeString, string);
 	    MPUT(result, keycstring, container);
 	    REL(container);

@@ -2,8 +2,8 @@
 #define settings_h
 
 #include "mtfile.c"
-#include "mtstr.c"
 #include "zc_map.c"
+#include "zc_string.c"
 
 typedef struct _settings_t settings_t;
 struct _settings_t
@@ -20,12 +20,12 @@ void              settings_del(const char* key);
 void              settings_set(const char* key, type_container_t* value);
 void              settings_setint(const char* key, int value);
 void              settings_setfloat(const char* key, float value);
-void              settings_setstring(const char* key, mtstr_t* value);
+void              settings_setstring(const char* key, str_t* value);
 void              settings_setunsigned(const char* key, uint32_t value);
 type_container_t* settings_get(const char* key);
 int               settings_getint(const char* key);
 float             settings_getfloat(const char* key);
-mtstr_t*          settings_getstring(const char* key);
+str_t*            settings_getstring(const char* key);
 uint32_t          settings_getunsigned(const char* key);
 
 #endif
@@ -95,7 +95,7 @@ void settings_setint(const char* key, int value)
 {
     char numstring[64] = {0};
     snprintf(numstring, 64, "%i", value);
-    mtstr_t*          string    = mtstr_frombytes(numstring);
+    str_t*            string    = str_frombytes(numstring);
     type_container_t* container = mtfile_defaultcontainer(kTypeString, string);
     map_put(settings.map, key, container);
     REL(string);
@@ -110,7 +110,7 @@ void settings_setfloat(const char* key, float value)
 {
     char numstring[64] = {0};
     snprintf(numstring, 64, "%.4f", value);
-    mtstr_t*          string    = mtstr_frombytes(numstring);
+    str_t*            string    = str_frombytes(numstring);
     type_container_t* container = mtfile_defaultcontainer(kTypeString, string);
     map_put(settings.map, key, container);
     REL(string);
@@ -121,7 +121,7 @@ void settings_setfloat(const char* key, float value)
 
 /* sets string for given key */
 
-void settings_setstring(const char* key, mtstr_t* value)
+void settings_setstring(const char* key, str_t* value)
 {
     type_container_t* container = mtfile_defaultcontainer(kTypeString, value);
     map_put(settings.map, key, container);
@@ -136,7 +136,7 @@ void settings_setunsigned(const char* key, uint32_t value)
 {
     char numstring[64] = {0};
     snprintf(numstring, 64, "%lu", (unsigned long) value);
-    mtstr_t*          string    = mtstr_frombytes(numstring);
+    str_t*            string    = str_frombytes(numstring);
     type_container_t* container = mtfile_defaultcontainer(kTypeString, string);
     map_put(settings.map, key, container);
     REL(string);
@@ -158,7 +158,7 @@ type_container_t* settings_get(const char* key)
 int settings_getint(const char* key)
 {
     type_container_t* value = map_get(settings.map, key);
-    if (value != NULL) return mtstr_intvalue(value->data);
+    if (value != NULL) return str_intvalue(value->data);
     else return 0;
 }
 
@@ -167,13 +167,13 @@ int settings_getint(const char* key)
 float settings_getfloat(const char* key)
 {
     type_container_t* value = map_get(settings.map, key);
-    if (value != NULL) return mtstr_floatvalue(value->data);
+    if (value != NULL) return str_floatvalue(value->data);
     else return 0.0;
 }
 
 /* returns string for given key */
 
-mtstr_t* settings_getstring(const char* key)
+str_t* settings_getstring(const char* key)
 {
     type_container_t* value = map_get(settings.map, key);
     if (value != NULL) return value->data;
@@ -185,7 +185,7 @@ mtstr_t* settings_getstring(const char* key)
 uint32_t settings_getunsigned(const char* key)
 {
     type_container_t* value = map_get(settings.map, key);
-    if (value != NULL) return (uint32_t) mtstr_unsignedvalue(value->data);
+    if (value != NULL) return (uint32_t) str_unsignedvalue(value->data);
     else return 0;
 }
 

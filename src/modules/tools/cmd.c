@@ -39,7 +39,6 @@ void        cmdqueue_reset(cmdqueue_t* queue);
 #if __INCLUDE_LEVEL__ == 0
 
 #include "../core/mtcstr.c"
-#include "../core/mtstr.c"
 #include "zc_memory.c"
 #include <string.h>
 

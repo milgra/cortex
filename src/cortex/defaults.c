@@ -54,6 +54,7 @@ void defaults_reset(
 #if __INCLUDE_LEVEL__ == 0
 
 #include "settings.c"
+#include "zc_string.c"
 
 defaults_t defaults = {0};
 
@@ -134,9 +135,12 @@ void defaults_reset()
     defaults.currentlevel = "levelA";
     defaults.currentstage = 0;
 
+    str_t* ns = str_new();
+    str_add_bytearray(ns, "true");
+
     settings_setstring(
 	"inited",
-	mtstr_frombytes("true"));
+	str_frombytes("true"));
 
     settings_setint(
 	"levelA",

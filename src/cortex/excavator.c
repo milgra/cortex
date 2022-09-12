@@ -1,8 +1,9 @@
 #ifndef excavator_h
 #define excavator_h
 
-#include "mtstr.c"
+#include "str_util.c"
 #include "zc_memory.c"
+#include "zc_string.c"
 #include <math.h>
 
 #define kExcavatorModeStill 0
@@ -46,7 +47,7 @@ void excavator_reset(
 
 void excavator_setmode(
     excavator_t* excavator,
-    mtstr_t*     string);
+    str_t*       string);
 
 void excavator_update(
     excavator_t* data,
@@ -112,10 +113,10 @@ void excavator_reset(
 
 void excavator_setmode(
     excavator_t* excavator,
-    mtstr_t*     string)
+    str_t*       string)
 {
 
-    char* bytes = mtstr_bytes(string);
+    char* bytes = str_new_cstring(string);
 
     if (strcmp(bytes, "still") == 0) excavator->mode = kExcavatorModeStill;
     if (strcmp(bytes, "linear") == 0) excavator->mode = kExcavatorModeLinear;
