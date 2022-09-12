@@ -2,11 +2,11 @@
 #define pixeltext_h
 
 #include "math2.c"
-#include "mtvec.c"
+#include "zc_vector.c"
 #include <stdio.h>
 
-v2_t     pixeltext_calcsize(char* label, float pixelsize);
-mtvec_t* pixeltext_generate(char* label, float pixelsize);
+v2_t   pixeltext_calcsize(char* label, float pixelsize);
+vec_t* pixeltext_generate(char* label, float pixelsize);
 
 #endif
 
@@ -122,9 +122,9 @@ v2_t pixeltext_calcsize(char* label, float pixelsize)
 
 /* generates label into a floatbuffer */
 
-mtvec_t* pixeltext_generate(char* label, float pixelsize)
+vec_t* pixeltext_generate(char* label, float pixelsize)
 {
-    mtvec_t* result = mtvec_alloc();
+    vec_t* result = VNEW();
 
     char* string = label;
 
@@ -148,12 +148,12 @@ mtvec_t* pixeltext_generate(char* label, float pixelsize)
 		}
 		else if (*pattern == '1')
 		{
-		    v2_t* coord = mtmem_alloc(sizeof(v2_t), NULL);
+		    v2_t* coord = CAL(sizeof(v2_t), NULL, NULL);
 
 		    coord->x = trans.x + pixelsize * col;
 		    coord->y = trans.y - pixelsize * row;
 
-		    mtvec_add(result, coord);
+		    VADD(result, coord);
 
 		    REL(coord);
 		}

@@ -1,8 +1,8 @@
 #ifndef mtfile_h
 #define mtfile_h
 
-#include "mtmap.c"
 #include "mtstr.c"
+#include "zc_map.c"
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -20,15 +20,16 @@ struct type_container_t
     void* data;
 };
 
-void              mtfile_writetofile(mtmap_t* map, char* path);
-mtmap_t*          mtfile_readfile(char* path);
-void              mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer);
-void              mtfile_appendvectortofile(mtvec_t* vector, FILE* file_pointer);
-void              mtfile_appendmaptofile(mtmap_t* map, FILE* file_pointer);
-mtmap_t*          mtfile_readmap(FILE* file_pointer);
-mtstr_t*          mtfile_readstring(FILE* file_pointer);
-mtvec_t*          mtfile_readvector(FILE* file_pointer);
-mtvec_t*          mtfile_readlines(char* path);
+void     mtfile_writetofile(map_t* map, char* path);
+map_t*   mtfile_readfile(char* path);
+void     mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer);
+void     mtfile_appendvectortofile(vec_t* vector, FILE* file_pointer);
+void     mtfile_appendmaptofile(map_t* map, FILE* file_pointer);
+map_t*   mtfile_readmap(FILE* file_pointer);
+mtstr_t* mtfile_readstring(FILE* file_pointer);
+vec_t*   mtfile_readvector(FILE* file_pointer);
+
+vec_t*            mtfile_readlines(char* path);
 type_container_t* mtfile_defaultcontainer(char type, void* data);
 
 #endif
@@ -36,7 +37,7 @@ type_container_t* mtfile_defaultcontainer(char type, void* data);
 #if __INCLUDE_LEVEL__ == 0
 
 #include "mtcstr.c"
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <string.h>
 
 /* appends string to opened file */
@@ -61,12 +62,12 @@ void mtfile_appendstringtofile(mtstr_t* string, FILE* file_pointer)
 
     // cleanup
 
-    mtmem_release(bytes);
+    REL(bytes);
 }
 
 /* appends vector to opened file */
 
-void mtfile_appendvectortofile(mtvec_t* vector, FILE* file_pointer)
+void mtfile_appendvectortofile(vec_t* vector, FILE* file_pointer)
 {
     // write type
 
@@ -90,23 +91,24 @@ void mtfile_appendvectortofile(mtvec_t* vector, FILE* file_pointer)
 
 /* appends map to opened file */
 
-void mtfile_appendmaptofile(mtmap_t* map, FILE* file_pointer)
+void mtfile_appendmaptofile(map_t* map, FILE* file_pointer)
 {
     // write type
 
     char   typebytes[1] = {kTypeMap};
     size_t writeup      = fwrite(typebytes, sizeof(uint8_t), 1, file_pointer);
 
-    mtvec_t* keys = mtmap_keys(map);
+    vec_t* keys = VNEW();
+    map_keys(map, keys);
     for (int index = 0; index < keys->length; index++)
     {
-	type_container_t* container = mtmap_get(map, keys->data[index]);
+	type_container_t* container = MGET(map, keys->data[index]);
 
 	if (container != NULL)
 	{
 	    mtstr_t* keystring = mtstr_frombytes(keys->data[index]);
 	    mtfile_appendstringtofile(keystring, file_pointer);
-	    mtmem_release(keystring);
+	    REL(keystring);
 
 	    if (container->type == kTypeString) mtfile_appendstringtofile(container->data, file_pointer);
 	    else if (container->type == kTypeVector) mtfile_appendvectortofile(container->data, file_pointer);
@@ -114,7 +116,7 @@ void mtfile_appendmaptofile(mtmap_t* map, FILE* file_pointer)
 	}
     }
 
-    mtmem_release(keys);
+    REL(keys);
 
     // write closing 0
 
@@ -124,7 +126,7 @@ void mtfile_appendmaptofile(mtmap_t* map, FILE* file_pointer)
 
 /* writes map to file recursively */
 
-void mtfile_writetofile(mtmap_t* map, char* path)
+void mtfile_writetofile(map_t* map, char* path)
 {
     remove(path);
 
@@ -148,7 +150,7 @@ void mtfile_writetofile(mtmap_t* map, char* path)
 
 mtstr_t* mtfile_readstring(FILE* file_pointer)
 {
-    char* bytes = mtmem_calloc(sizeof(char) * 50, NULL);
+    char* bytes = CAL(sizeof(char) * 50, NULL, NULL);
 
     int index    = 0;
     int length   = 50;
@@ -160,52 +162,52 @@ mtstr_t* mtfile_readstring(FILE* file_pointer)
 	if (index == length)
 	{
 	    length += 50;
-	    bytes = mtmem_realloc(bytes, sizeof(char) * length);
+	    bytes = mem_realloc(bytes, sizeof(char) * length);
 	}
 	nextbyte = fgetc(file_pointer);
     }
     bytes[index++] = 0;
 
     mtstr_t* result = mtstr_frombytes(bytes);
-    mtmem_release(bytes);
+    REL(bytes);
     return result;
 }
 
 /* reads vector from file */
 
-mtvec_t* mtfile_readvector(FILE* file_pointer)
+vec_t* mtfile_readvector(FILE* file_pointer)
 {
-    mtvec_t* result   = mtvec_alloc();
-    int      nextbyte = fgetc(file_pointer);
+    vec_t* result   = VNEW();
+    int    nextbyte = fgetc(file_pointer);
 
     while (nextbyte != EOF && nextbyte != 0)
     {
 	if (nextbyte == kTypeMap)
 	{
-	    mtmap_t*          map       = mtfile_readmap(file_pointer);
-	    type_container_t* container = mtmem_calloc(sizeof(type_container_t), NULL);
+	    map_t*            map       = mtfile_readmap(file_pointer);
+	    type_container_t* container = CAL(sizeof(type_container_t), NULL, NULL);
 	    container->type             = kTypeMap;
 	    container->data             = map;
-	    mtvec_add(result, container);
-	    mtmem_release(container);
+	    VADD(result, container);
+	    REL(container);
 	}
 	else if (nextbyte == kTypeVector)
 	{
-	    mtvec_t*          vector    = mtfile_readvector(file_pointer);
-	    type_container_t* container = mtmem_calloc(sizeof(type_container_t), NULL);
+	    vec_t*            vector    = mtfile_readvector(file_pointer);
+	    type_container_t* container = CAL(sizeof(type_container_t), NULL, NULL);
 	    container->type             = kTypeVector;
 	    container->data             = vector;
-	    mtvec_add(result, container);
-	    mtmem_release(container);
+	    VADD(result, container);
+	    REL(container);
 	}
 	else if (nextbyte == kTypeString)
 	{
 	    mtstr_t*          string    = mtfile_readstring(file_pointer);
-	    type_container_t* container = mtmem_calloc(sizeof(type_container_t), NULL);
+	    type_container_t* container = CAL(sizeof(type_container_t), NULL, NULL);
 	    container->type             = kTypeString;
 	    container->data             = string;
-	    mtvec_add(result, container);
-	    mtmem_release(container);
+	    VADD(result, container);
+	    REL(container);
 	}
 
 	// read next value's type
@@ -217,10 +219,10 @@ mtvec_t* mtfile_readvector(FILE* file_pointer)
 
 /* reads map from file */
 
-mtmap_t* mtfile_readmap(FILE* file_pointer)
+map_t* mtfile_readmap(FILE* file_pointer)
 {
-    mtmap_t* result   = mtmap_alloc();
-    int      nextbyte = fgetc(file_pointer);
+    map_t* result   = MNEW();
+    int    nextbyte = fgetc(file_pointer);
     while (nextbyte != EOF && nextbyte != 0)
     {
 	// read key
@@ -233,31 +235,31 @@ mtmap_t* mtfile_readmap(FILE* file_pointer)
 	nextbyte = fgetc(file_pointer);
 	if (nextbyte == kTypeMap)
 	{
-	    mtmap_t*          map       = mtfile_readmap(file_pointer);
+	    map_t*            map       = mtfile_readmap(file_pointer);
 	    type_container_t* container = mtfile_defaultcontainer(kTypeMap, map);
-	    mtmap_put(result, keycstring, container);
-	    mtmem_release(container);
-	    mtmem_release(map);
+	    MPUT(result, keycstring, container);
+	    REL(container);
+	    REL(map);
 	}
 	else if (nextbyte == kTypeVector)
 	{
-	    mtvec_t*          vector    = mtfile_readvector(file_pointer);
+	    vec_t*            vector    = mtfile_readvector(file_pointer);
 	    type_container_t* container = mtfile_defaultcontainer(kTypeVector, vector);
-	    mtmap_put(result, keycstring, container);
-	    mtmem_release(container);
-	    mtmem_release(vector);
+	    MPUT(result, keycstring, container);
+	    REL(container);
+	    REL(vector);
 	}
 	else if (nextbyte == kTypeString)
 	{
 	    mtstr_t*          string    = mtfile_readstring(file_pointer);
 	    type_container_t* container = mtfile_defaultcontainer(kTypeString, string);
-	    mtmap_put(result, keycstring, container);
-	    mtmem_release(container);
-	    mtmem_release(string);
+	    MPUT(result, keycstring, container);
+	    REL(container);
+	    REL(string);
 	}
 
-	mtmem_release(keycstring);
-	mtmem_release(key);
+	REL(keycstring);
+	REL(key);
 
 	// read key type
 
@@ -268,9 +270,9 @@ mtmap_t* mtfile_readmap(FILE* file_pointer)
 
 // reads up file, returns map
 
-mtmap_t* mtfile_readfile(char* path)
+map_t* mtfile_readfile(char* path)
 {
-    mtmap_t* result = NULL;
+    map_t* result = NULL;
 
     int fd = open(path, O_RDONLY);
 
@@ -295,11 +297,11 @@ mtmap_t* mtfile_readfile(char* path)
 
 /* reads up file, returns map */
 
-mtvec_t* mtfile_readlines(char* path)
+vec_t* mtfile_readlines(char* path)
 {
-    mtvec_t* result      = mtvec_alloc();
-    char     string[100] = {0};
-    int      index       = 0;
+    vec_t* result      = VNEW();
+    char   string[100] = {0};
+    int    index       = 0;
 
     int fd = open(path, O_RDONLY);
 
@@ -317,8 +319,8 @@ mtvec_t* mtfile_readlines(char* path)
 		else
 		{
 		    char* copy = mtcstr_fromcstring(string);
-		    mtvec_add(result, copy);
-		    mtmem_release(copy);
+		    VADD(result, copy);
+		    REL(copy);
 		    memset(string, 0, 100);
 		    index = 0;
 		}
@@ -337,16 +339,16 @@ mtvec_t* mtfile_readlines(char* path)
 void mtfile_defaultcontainer_destruct(void* pointer)
 {
     type_container_t* container = pointer;
-    mtmem_release(container->data);
+    REL(container->data);
 }
 
 /* creates container */
 
 type_container_t* mtfile_defaultcontainer(char type, void* data)
 {
-    type_container_t* result = mtmem_calloc(sizeof(type_container_t), mtfile_defaultcontainer_destruct);
+    type_container_t* result = CAL(sizeof(type_container_t), mtfile_defaultcontainer_destruct, NULL);
     result->type             = type;
-    result->data             = mtmem_retain(data);
+    result->data             = RET(data);
     return result;
 }
 

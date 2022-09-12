@@ -4,8 +4,8 @@
 #include "buffers.c"
 #include "floatbuffer.c"
 #include "generator.c"
-#include "mtvec.c"
 #include "voxel.c"
+#include "zc_vector.c"
 #include <stdio.h>
 
 #define SCENE_WIDTH 960.0
@@ -57,11 +57,11 @@ struct _scene_t
 
     /* buffers and containers */
 
-    mtvec_t* sparks;
-    mtvec_t* shards;
+    vec_t* sparks;
+    vec_t* shards;
 
-    mtvec_t* glowshards;
-    mtvec_t* mainshards;
+    vec_t* glowshards;
+    vec_t* mainshards;
 
     /* label */
 
@@ -91,9 +91,9 @@ extern scene_t scene;
 
 #include "mtbus.c"
 #include "mtcstr.c"
-#include "mtmem.c"
 #include "mtstr.c"
 #include "pixeltext.c"
+#include "zc_memory.c"
 
 #include "SDL.h"
 #include "defaults.c"
@@ -146,11 +146,11 @@ void scene_init(
     scene.generated_row = 0;
     scene.generator_run = 0;
 
-    scene.shards = mtvec_alloc();
-    scene.sparks = mtvec_alloc();
+    scene.shards = VNEW();
+    scene.sparks = VNEW();
 
-    scene.glowshards = mtvec_alloc();
-    scene.mainshards = mtvec_alloc();
+    scene.glowshards = VNEW();
+    scene.mainshards = VNEW();
 
     script_init();
     buffers_init();
@@ -176,11 +176,11 @@ void scene_free(
     void)
 {
 
-    mtmem_release(scene.shards);
-    mtmem_release(scene.sparks);
+    REL(scene.shards);
+    REL(scene.sparks);
 
-    mtmem_release(scene.glowshards);
-    mtmem_release(scene.mainshards);
+    REL(scene.glowshards);
+    REL(scene.mainshards);
 
     script_free();
     buffers_free();
@@ -193,11 +193,11 @@ void scene_reset(
     void)
 {
 
-    mtvec_reset(scene.sparks);
-    mtvec_reset(scene.shards);
+    vec_reset(scene.sparks);
+    vec_reset(scene.shards);
 
-    mtvec_reset(scene.glowshards);
-    mtvec_reset(scene.mainshards);
+    vec_reset(scene.glowshards);
+    vec_reset(scene.mainshards);
 
     script_reset();
     buffers_reset();
@@ -389,7 +389,7 @@ void scene_setup_sparks(
 	cube,
 	(v3_t){dx, dy, dz});
 
-    mtvec_add(scene.sparks, particle);
+    VADD(scene.sparks, particle);
 
     REL(particle);
 }
@@ -454,7 +454,7 @@ void scene_setup_explosion(
 		    white,
 		    (v3_t){dx, dy, dz});
 
-		mtvec_add(scene.glowshards, particle);
+		VADD(scene.glowshards, particle);
 
 		REL(particle);
 	    }
@@ -463,7 +463,7 @@ void scene_setup_explosion(
 		voxel,
 		(v3_t){dx, dy, dz});
 
-	    mtvec_add(scene.shards, particle);
+	    VADD(scene.shards, particle);
 
 	    REL(particle);
 	}
@@ -489,7 +489,7 @@ void scene_setup_explosion(
 		scene.bubbles[row][col],
 		(v3_t){dx, dy, dz});
 
-	    mtvec_add(scene.shards, particle);
+	    VADD(scene.shards, particle);
 
 	    REL(particle);
 	}
@@ -508,7 +508,7 @@ void scene_setup_explosion(
 	particle->dir.y = 0.5 + (float) (rand() % 10) / 10.0;
 	particle->dir.z = -0.5 + (float) (rand() % 10) / 10.0;
 
-	mtvec_add(scene.mainshards, particle);
+	VADD(scene.mainshards, particle);
     }
 
     // new direction to maincube
@@ -521,7 +521,7 @@ void scene_setup_explosion(
 	maincube.voxel,
 	(v3_t){dx, dy, dz});
 
-    mtvec_add(scene.mainshards, particle);
+    VADD(scene.mainshards, particle);
 
     REL(particle);
 
@@ -546,7 +546,7 @@ void scene_label(
 
     x -= textsize.x / 2.0;
 
-    mtvec_t* points = pixeltext_generate(label, size);
+    vec_t* points = pixeltext_generate(label, size);
 
     for (int index = 0;
 	 index < points->length;
@@ -758,7 +758,7 @@ void scene_updatealive(
 		fabs(particle->model.model.z) > 3000.0)
 	    {
 
-		mtvec_remove(scene.sparks, particle);
+		VREM(scene.sparks, particle);
 	    }
 	}
     }

@@ -30,8 +30,9 @@ particle_t* particle_create(
     v3_t    direction)
 {
 
-    particle_t* particle = mtmem_calloc(
+    particle_t* particle = CAL(
 	sizeof(particle_t),
+	NULL,
 	NULL);
 
     particle->dir   = direction;

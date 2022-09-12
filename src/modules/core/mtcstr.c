@@ -15,7 +15,7 @@ char*    mtcstr_generate_alphanumeric(uint32_t length);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <string.h>
 
 static char hexa[] =
@@ -145,7 +145,7 @@ char* mtcstr_fromformat(char* format, ...)
     length += 1;
     va_end(ap);
 
-    char* result = mtmem_calloc(sizeof(char) * length, NULL);
+    char* result = CAL(sizeof(char) * length, NULL, NULL);
     va_start(ap, format);
     vsnprintf(result, length, format, ap);
     va_end(ap);
@@ -160,7 +160,7 @@ char* mtcstr_fromcstring(char* string)
     char* result = NULL;
     if (string != NULL)
     {
-	result = mtmem_calloc((strlen(string) + 1) * sizeof(char), NULL);
+	result = CAL((strlen(string) + 1) * sizeof(char), NULL, NULL);
 	memcpy(result, string, strlen(string));
     }
     return result;
@@ -173,7 +173,7 @@ char* consonants = "bcdefghijklmnpqrstvwxyz";
 
 char* mtcstr_generate_readablec(uint32_t length)
 {
-    char* result = mtmem_calloc(sizeof(char) * (length + 1), NULL);
+    char* result = CAL(sizeof(char) * (length + 1), NULL, NULL);
     for (int index = 0; index < length; index += 2)
     {
 	result[index] = consonants[rand() % strlen(consonants)];
@@ -191,7 +191,7 @@ char* mtcstr_alphanumeric =
 
 char* mtcstr_generate_alphanumeric(uint32_t length)
 {
-    char* result = mtmem_calloc(sizeof(char) * (length + 1), NULL);
+    char* result = CAL(sizeof(char) * (length + 1), NULL, NULL);
     for (int index = 0; index < length; index++)
     {
 	result[index] = mtcstr_alphanumeric[rand() % strlen(mtcstr_alphanumeric)];

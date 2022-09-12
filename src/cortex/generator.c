@@ -40,7 +40,7 @@ void generator_reset(
     void);
 
 void generator_setup(
-    mtmap_t* settings);
+    map_t* settings);
 
 void generator_generate_row(
     int   row,
@@ -103,66 +103,66 @@ void generator_reset(
 /* load values from script */
 
 void generator_setup(
-    mtmap_t* settings)
+    map_t* settings)
 {
 
-    mtstr_t* red = mtmap_get(
+    mtstr_t* red = MGET(
 	settings,
 	"red");
 
-    mtstr_t* blue = mtmap_get(
+    mtstr_t* blue = MGET(
 	settings,
 	"blue");
 
-    mtstr_t* green = mtmap_get(
+    mtstr_t* green = MGET(
 	settings,
 	"green");
 
-    mtstr_t* diffA = mtmap_get(
+    mtstr_t* diffA = MGET(
 	settings,
 	"diffA");
 
-    mtstr_t* diffB = mtmap_get(
+    mtstr_t* diffB = MGET(
 	settings,
 	"diffB");
 
-    mtstr_t* diffC = mtmap_get(
+    mtstr_t* diffC = MGET(
 	settings,
 	"diffC");
 
-    mtstr_t* diffD = mtmap_get(
+    mtstr_t* diffD = MGET(
 	settings,
 	"diffD");
 
-    mtstr_t* sizeA = mtmap_get(
+    mtstr_t* sizeA = MGET(
 	settings,
 	"widthA");
 
-    mtstr_t* sizeB = mtmap_get(
+    mtstr_t* sizeB = MGET(
 	settings,
 	"widthB");
 
-    mtstr_t* sizeC = mtmap_get(
+    mtstr_t* sizeC = MGET(
 	settings,
 	"widthC");
 
-    mtstr_t* sizeD = mtmap_get(
+    mtstr_t* sizeD = MGET(
 	settings,
 	"widthD");
 
-    mtstr_t* modeA = mtmap_get(
+    mtstr_t* modeA = MGET(
 	settings,
 	"modeA");
 
-    mtstr_t* modeB = mtmap_get(
+    mtstr_t* modeB = MGET(
 	settings,
 	"modeB");
 
-    mtstr_t* modeC = mtmap_get(
+    mtstr_t* modeC = MGET(
 	settings,
 	"modeC");
 
-    mtstr_t* modeD = mtmap_get(
+    mtstr_t* modeD = MGET(
 	settings,
 	"modeD");
 

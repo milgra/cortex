@@ -2,12 +2,12 @@
 #define menu_h
 
 #include "floatbuffer.c"
-#include "mtmem.c"
-#include "mtvec.c"
 #include "pixeltext.c"
 #include "scene.c"
 #include "settings.c"
 #include "voxel.c"
+#include "zc_memory.c"
+#include "zc_vector.c"
 #include <stdio.h>
 
 #define MENU_STATE_DEFAULT 0
@@ -143,7 +143,7 @@ void menu_label(
 
     x -= textsize.x / 2.0;
 
-    mtvec_t* points = pixeltext_generate(
+    vec_t* points = pixeltext_generate(
 	label,
 	size);
 

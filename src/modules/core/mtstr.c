@@ -1,8 +1,8 @@
 #ifndef mtstr_h
 #define mtstr_h
 
-#include "mtmap.c"
-#include "mtvec.c"
+#include "zc_map.c"
+#include "zc_vector.c"
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -36,15 +36,15 @@ int8_t   mtstr_compare(mtstr_t* mtstra, mtstr_t* mtstrb);
 int      mtstr_intvalue(mtstr_t* string);
 float    mtstr_floatvalue(mtstr_t* string);
 uint32_t mtstr_unsignedvalue(mtstr_t* string);
-mtvec_t* mtstr_split(mtstr_t* string, char character);
-mtmap_t* mtstr_tokenize(mtstr_t* descriptor);
+vec_t*   mtstr_split(mtstr_t* string, char character);
+map_t*   mtstr_tokenize(mtstr_t* descriptor);
 uint32_t mtstr_find(mtstr_t* string, mtstr_t* substring, uint32_t from);
 char*    mtstr_bytes(mtstr_t* string);
 
 #endif
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <string.h>
 
 #define UTF8_BOM "\xEF\xBB\xBF"
@@ -53,12 +53,12 @@ char*    mtstr_bytes(mtstr_t* string);
 
 mtstr_t* mtstr_alloc()
 {
-    mtstr_t* string = mtmem_calloc(sizeof(mtstr_t), mtstr_dealloc);
+    mtstr_t* string = CAL(sizeof(mtstr_t), mtstr_dealloc, NULL);
 
     string->length       = 0;  // current length of codepoint array
     string->length_real  = 10; // backing length of codepoint array
     string->length_bytes = 0;  // needed length of byte array for all codepoints
-    string->codepoints   = mtmem_calloc(string->length_real * sizeof(uint32_t), NULL);
+    string->codepoints   = CAL(string->length_real * sizeof(uint32_t), NULL, NULL);
 
     return string;
 }
@@ -68,7 +68,7 @@ mtstr_t* mtstr_alloc()
 void mtstr_dealloc(void* pointer)
 {
     mtstr_t* string = pointer;
-    mtmem_release(string->codepoints);
+    REL(string->codepoints);
 }
 
 /* resets string */
@@ -78,7 +78,7 @@ void mtstr_reset(mtstr_t* string)
     string->length       = 0;
     string->length_real  = 10;
     string->length_bytes = 0;
-    string->codepoints   = mtmem_realloc(string->codepoints, string->length_real * sizeof(uint32_t));
+    string->codepoints   = mem_realloc(string->codepoints, string->length_real * sizeof(uint32_t));
     memset(string->codepoints, 0, string->length_real * sizeof(uint32_t));
 }
 
@@ -95,13 +95,13 @@ mtstr_t* mtstr_fromformat(char* format, ...)
     length += 1;
     va_end(ap);
 
-    char* result = mtmem_calloc(sizeof(char) * length, NULL);
+    char* result = CAL(sizeof(char) * length, NULL, NULL);
     va_start(ap, format);
     vsnprintf(result, length, format, ap);
     va_end(ap);
 
     mtstr_t* resstring = mtstr_frombytes(result);
-    mtmem_release(result);
+    REL(result);
 
     return resstring;
 }
@@ -192,7 +192,7 @@ void mtstr_addstring(mtstr_t* mtstra, mtstr_t* mtstrb)
 	uint32_t newlength_real  = mtstra->length_real + mtstrb->length_real;
 	uint32_t newlength_bytes = mtstra->length_bytes + mtstrb->length_bytes;
 
-	mtstra->codepoints = mtmem_realloc(mtstra->codepoints, sizeof(uint32_t) * newlength_real);
+	mtstra->codepoints = mem_realloc(mtstra->codepoints, sizeof(uint32_t) * newlength_real);
 	memcpy((void*) (mtstra->codepoints + mtstra->length), (void*) mtstrb->codepoints, mtstrb->length * sizeof(uint32_t));
 
 	mtstra->length       = newlength;
@@ -269,7 +269,7 @@ void mtstr_addcodepoint(mtstr_t* string, uint32_t codepoint)
     // expand
     if (string->length_real == string->length)
     {
-	string->codepoints = mtmem_realloc(string->codepoints, sizeof(uint32_t) * (string->length_real + 10));
+	string->codepoints = mem_realloc(string->codepoints, sizeof(uint32_t) * (string->length_real + 10));
 	string->length_real += 10;
     }
 
@@ -333,8 +333,8 @@ int8_t mtstr_compare(mtstr_t* mtstra, mtstr_t* mtstrb)
 
     int8_t result = strcmp(bytes_a, bytes_b);
 
-    mtmem_release(bytes_a);
-    mtmem_release(bytes_b);
+    REL(bytes_a);
+    REL(bytes_b);
 
     return result;
 }
@@ -345,7 +345,7 @@ int mtstr_intvalue(mtstr_t* string)
 {
     char* viewindexc = mtstr_bytes(string);
     int   viewindex  = atoi(viewindexc);
-    mtmem_release(viewindexc);
+    REL(viewindexc);
     return viewindex;
 }
 
@@ -355,7 +355,7 @@ float mtstr_floatvalue(mtstr_t* string)
 {
     char* viewindexc = mtstr_bytes(string);
     float viewindex  = atof(viewindexc);
-    mtmem_release(viewindexc);
+    REL(viewindexc);
     return viewindex;
 }
 
@@ -365,15 +365,15 @@ uint32_t mtstr_unsignedvalue(mtstr_t* string)
 {
     char*         valuec = mtstr_bytes(string);
     unsigned long value  = strtoul(valuec, NULL, 0);
-    mtmem_release(valuec);
+    REL(valuec);
     return (uint32_t) value;
 }
 
 /* splits string at codepoint to a vector */
 
-mtvec_t* mtstr_split(mtstr_t* string, char codepoint)
+vec_t* mtstr_split(mtstr_t* string, char codepoint)
 {
-    mtvec_t* vector  = mtvec_alloc();
+    vec_t*   vector  = VNEW();
     mtstr_t* segment = mtstr_alloc();
     for (int index = 0; index < string->length; index++)
     {
@@ -382,32 +382,32 @@ mtvec_t* mtstr_split(mtstr_t* string, char codepoint)
 	    // add word to result, create new word
 	    if (segment->length > 0)
 	    {
-		mtvec_add(vector, segment);
-		mtmem_release(segment);
+		VADD(vector, segment);
+		REL(segment);
 		segment = mtstr_alloc();
 	    }
 	}
 	else mtstr_addcodepoint(segment, string->codepoints[index]);
     }
     // add word to result
-    if (segment->length > 0) mtvec_add(vector, segment);
-    mtmem_release(segment);
+    if (segment->length > 0) VADD(vector, segment);
+    REL(segment);
     return vector;
 }
 
 /* splits string at spaces and creates key-value pairs */
 
-mtmap_t* mtstr_tokenize(mtstr_t* descriptor)
+map_t* mtstr_tokenize(mtstr_t* descriptor)
 {
-    mtmap_t* map    = mtmap_alloc();
-    mtvec_t* tokens = mtstr_split(descriptor, ' ');
+    map_t* map    = MNEW();
+    vec_t* tokens = mtstr_split(descriptor, ' ');
     for (int index = 0; index < tokens->length; index += 2)
     {
 	char* key = mtstr_bytes(tokens->data[index]);
-	mtmap_put(map, key, tokens->data[index + 1]);
-	mtmem_release(key);
+	MPUT(map, key, tokens->data[index + 1]);
+	REL(key);
     }
-    mtmem_release(tokens);
+    REL(tokens);
     return map;
 }
 
@@ -439,7 +439,7 @@ uint32_t mtstr_find(mtstr_t* string, mtstr_t* substring, uint32_t from)
 char* mtstr_bytes(mtstr_t* string)
 {
     if (string == NULL) return NULL;
-    char*    bytes    = mtmem_calloc((string->length_bytes + 1) * sizeof(char), NULL);
+    char*    bytes    = CAL((string->length_bytes + 1) * sizeof(char), NULL, NULL);
     uint32_t position = 0;
     for (int index = 0; index < string->length; index++)
     {

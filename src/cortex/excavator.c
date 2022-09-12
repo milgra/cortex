@@ -1,8 +1,8 @@
 #ifndef excavator_h
 #define excavator_h
 
-#include "mtmem.c"
 #include "mtstr.c"
+#include "zc_memory.c"
 #include <math.h>
 
 #define kExcavatorModeStill 0
@@ -66,8 +66,9 @@ excavator_t* excavator_alloc(
     int width)
 {
 
-    excavator_t* result = mtmem_calloc(
+    excavator_t* result = CAL(
 	sizeof(excavator_t),
+	NULL,
 	NULL);
 
     result->mode       = kExcavatorModeLinear;
@@ -123,7 +124,7 @@ void excavator_setmode(
     if (strcmp(bytes, "zigzag") == 0) excavator->mode = kExcavatorModeZigZag;
     if (strcmp(bytes, "strong") == 0) excavator->mode = kExcavatorModeStrong;
 
-    mtmem_release(bytes);
+    REL(bytes);
 }
 
 void excavator_update_size(

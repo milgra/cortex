@@ -1,26 +1,26 @@
 #ifndef triangulate_h
 #define triangulate_h
 
-#include "mtvec.c"
+#include "zc_vector.c"
 #include <stdio.h>
 
-char  triangulate_process(mtvec_t* contour, mtvec_t* result);
-float triangulate_area(mtvec_t* contour);
+char  triangulate_process(vec_t* contour, vec_t* result);
+float triangulate_area(vec_t* contour);
 char  triangulate_inside_triangle(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Px, float Py);
-char  triangulate_snip(mtvec_t* contour, int u, int v, int w, int n, int* V);
+char  triangulate_snip(vec_t* contour, int u, int v, int w, int n, int* V);
 
 #endif
 
 #if __INCLUDE_LEVEL__ == 0
 
 #include "math2.c"
-#include "mtmem.c"
+#include "zc_memory.c"
 
 #define EPSILON 0.0000000001f
 
 /* calculates area of contour */
 
-float triangulate_area(mtvec_t* contour)
+float triangulate_area(vec_t* contour)
 {
     int n = contour->length;
 
@@ -65,7 +65,7 @@ char triangulate_inside_triangle(float Ax, float Ay, float Bx, float By, float C
 
 /* snips contour */
 
-char triangulate_snip(mtvec_t* contour, int u, int v, int w, int n, int* V)
+char triangulate_snip(vec_t* contour, int u, int v, int w, int n, int* V)
 {
     int   p;
     float Ax, Ay, Bx, By, Cx, Cy, Px, Py;
@@ -105,14 +105,14 @@ char triangulate_snip(mtvec_t* contour, int u, int v, int w, int n, int* V)
 
 /* processes contour, returns triangles in result vector */
 
-char triangulate_process(mtvec_t* contour, mtvec_t* result)
+char triangulate_process(vec_t* contour, vec_t* result)
 {
     /* allocate and initialize list of Vertices in polygon */
 
     int n = contour->length;
     if (n < 3) return 0;
 
-    int* V = mtmem_calloc(sizeof(int) * n, NULL);
+    int* V = CAL(sizeof(int) * n, NULL, NULL);
 
     /* we want a counter-clockwise polygon in V */
 
@@ -132,7 +132,7 @@ char triangulate_process(mtvec_t* contour, mtvec_t* result)
 	if (0 >= (count--))
 	{
 	    //** Triangulate: ERROR - probably bad polygon!
-	    mtmem_release(V);
+	    REL(V);
 	    return 0;
 	}
 
@@ -154,9 +154,9 @@ char triangulate_process(mtvec_t* contour, mtvec_t* result)
 	    c = V[w];
 
 	    /* output Triangle */
-	    mtvec_add(result, contour->data[a]);
-	    mtvec_add(result, contour->data[b]);
-	    mtvec_add(result, contour->data[c]);
+	    VADD(result, contour->data[a]);
+	    VADD(result, contour->data[b]);
+	    VADD(result, contour->data[c]);
 
 	    m++;
 
@@ -169,7 +169,7 @@ char triangulate_process(mtvec_t* contour, mtvec_t* result)
 	}
     }
 
-    mtmem_release(V);
+    REL(V);
 
     return 1;
 }

@@ -1,8 +1,7 @@
 #ifndef math2_h
 #define math2_h
 
-#include "mtvec.c"
-#include <math.h>
+#include "zc_vector.c"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,7 +68,7 @@ uint8_t square_checkoverlapping(square2_t squarea, square2_t squareb);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <assert.h>
 #include <float.h>
 

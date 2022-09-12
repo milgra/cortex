@@ -28,7 +28,7 @@
 #include "math2.c"
 #include "math3.c"
 #include "math4.c"
-#include "mtmem.c"
+#include "zc_memory.c"
 
 typedef struct floatbuffer_t floatbuffer_t;
 struct floatbuffer_t
@@ -59,9 +59,9 @@ void           floatbuffer_setprojection(floatbuffer_t* floatbuffer, m4_t projec
 
 floatbuffer_t* floatbuffer_alloc()
 {
-    floatbuffer_t* floatbuffer = mtmem_calloc(sizeof(floatbuffer_t), floatbuffer_dealloc);
+    floatbuffer_t* floatbuffer = CAL(sizeof(floatbuffer_t), floatbuffer_dealloc, NULL);
 
-    floatbuffer->data        = mtmem_calloc(sizeof(GLfloat) * 10, NULL);
+    floatbuffer->data        = CAL(sizeof(GLfloat) * 10, NULL, NULL);
     floatbuffer->length      = 0;
     floatbuffer->length_real = 10;
 
@@ -73,7 +73,7 @@ floatbuffer_t* floatbuffer_alloc()
 void floatbuffer_dealloc(void* pointer)
 {
     floatbuffer_t* floatbuffer = pointer;
-    mtmem_release(floatbuffer->data);
+    REL(floatbuffer->data);
 }
 
 /* resets floatbuffer */
@@ -90,7 +90,7 @@ void floatbuffer_expand(floatbuffer_t* floatbuffer)
 {
     assert(floatbuffer->length_real < UINT32_MAX / 2);
     floatbuffer->length_real *= 2;
-    floatbuffer->data = mtmem_realloc(floatbuffer->data, sizeof(void*) * floatbuffer->length_real);
+    floatbuffer->data = mem_realloc(floatbuffer->data, sizeof(void*) * floatbuffer->length_real);
 }
 
 /* adds single float to buffer */

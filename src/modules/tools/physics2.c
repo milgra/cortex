@@ -2,7 +2,7 @@
 #define physics2_h
 
 #include "math2.c"
-#include "mtvec.c"
+#include "zc_vector.c"
 #include <math.h>
 #include <stdio.h>
 
@@ -16,7 +16,7 @@ struct _mass2_t
     float radius;
     float elasticity;
 
-    mtvec_t* segmentgroups;
+    vec_t* segmentgroups;
 };
 
 mass2_t* mass2_alloc(v2_t position, float radius, float weight, float elasticity);
@@ -58,8 +58,8 @@ void       aguard2_new(aguard2_t* guard);
 typedef struct _surfaces_t surfaces_t;
 struct _surfaces_t
 {
-    mtvec_t** strips;
-    mtvec_t*  groups;
+    vec_t** strips;
+    vec_t*  groups;
 
     uint32_t size;
     float    stripwidth;
@@ -68,7 +68,7 @@ struct _surfaces_t
 surfaces_t* surfaces_alloc(uint32_t size, float stripwidth);
 void        surfaces_reset(surfaces_t* surfaces);
 void        surfaces_addsegment(surfaces_t* surfaces, segment2_t* segment);
-void        surfaces_segments_for_mtvec_and_threshold(surfaces_t* surfaces, v2_t trans, v2_t basis, float threshold);
+void        surfaces_segments_for_vec_and_threshold(surfaces_t* surfaces, v2_t trans, v2_t basis, float threshold);
 
 typedef struct _physics2_collision_t physics2_collision_t;
 struct _physics2_collision_t
@@ -78,10 +78,10 @@ struct _physics2_collision_t
     segment2_t segments[10];
 };
 
-void physics2_set_gravity(mtvec_t* masses, v2_t gravity);
-void physics2_set_distances(mtvec_t* dguards);
-void physics2_set_angles(mtvec_t* aguards);
-void physics2_set_positions(mtvec_t* masses, surfaces_t* surfaces);
+void physics2_set_gravity(vec_t* masses, v2_t gravity);
+void physics2_set_distances(vec_t* dguards);
+void physics2_set_angles(vec_t* aguards);
+void physics2_set_positions(vec_t* masses, surfaces_t* surfaces);
 void physics2_new_mass_position(mass2_t* mass, surfaces_t* surfaces);
 void physics2_collect_intersecting_surfaces(surfaces_t* surfaces, v2_t trans, v2_t basis, float radius, physics2_collision_t* collision);
 void physics2_collect_intersecting_and_nearby_surfaces(surfaces_t* surfaces, v2_t trans, v2_t basis, float radius, physics2_collision_t* collision);
@@ -90,7 +90,7 @@ void physics2_collect_intersecting_and_nearby_surfaces(surfaces_t* surfaces, v2_
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <float.h>
 
 #ifndef M_PI
@@ -108,7 +108,7 @@ void surfaces_dealloc(void* pointer);
 
 mass2_t* mass2_alloc(v2_t position, float radius, float weight, float elasticity)
 {
-    mass2_t* result = mtmem_calloc(sizeof(mass2_t), mass2_dealloc);
+    mass2_t* result = CAL(sizeof(mass2_t), mass2_dealloc, NULL);
 
     result->trans = position;
     result->basis = v2_init(0.0, 0.0);
@@ -117,7 +117,7 @@ mass2_t* mass2_alloc(v2_t position, float radius, float weight, float elasticity
     result->weight     = weight;
     result->elasticity = elasticity;
 
-    result->segmentgroups = mtvec_alloc();
+    result->segmentgroups = VNEW();
 
     return result;
 }
@@ -127,7 +127,7 @@ mass2_t* mass2_alloc(v2_t position, float radius, float weight, float elasticity
 void mass2_dealloc(void* pointer)
 {
     mass2_t* mass = pointer;
-    mtmem_release(mass->segmentgroups);
+    REL(mass->segmentgroups);
 }
 
 /* creates distance guard */
@@ -136,7 +136,7 @@ dguard2_t* dguard2_alloc(mass2_t* mass_a, mass2_t* mass_b, float distance, float
 {
     float sumweight = mass_a->weight + mass_b->weight;
 
-    dguard2_t* dguard = mtmem_calloc(sizeof(dguard2_t), NULL);
+    dguard2_t* dguard = CAL(sizeof(dguard2_t), NULL, NULL);
 
     dguard->mass_a     = mass_a;
     dguard->mass_b     = mass_b;
@@ -186,7 +186,7 @@ aguard2_t* aguard2_alloc(mass2_t* mass_a, mass2_t* mass_b, mass2_t* mass_c, floa
 {
     float sumweight = mass_a->weight + mass_c->weight;
 
-    aguard2_t* guard = mtmem_calloc(sizeof(aguard2_t), NULL);
+    aguard2_t* guard = CAL(sizeof(aguard2_t), NULL, NULL);
 
     guard->mass_a = mass_a;
     guard->mass_b = mass_b;
@@ -278,14 +278,14 @@ void aguard2_new(aguard2_t* guard)
 
 surfaces_t* surfaces_alloc(uint32_t size, float stripwidth)
 {
-    surfaces_t* result = mtmem_calloc(sizeof(surfaces_t), surfaces_dealloc);
+    surfaces_t* result = CAL(sizeof(surfaces_t), surfaces_dealloc, NULL);
 
     result->size       = size;
     result->stripwidth = stripwidth;
-    result->strips     = mtmem_calloc(sizeof(mtvec_t) * size, NULL);
-    result->groups     = mtvec_alloc();
+    result->strips     = CAL(sizeof(vec_t) * size, NULL, NULL);
+    result->groups     = VNEW();
 
-    for (int index = 0; index < size; index++) result->strips[index] = mtvec_alloc();
+    for (int index = 0; index < size; index++) result->strips[index] = VNEW();
 
     return result;
 }
@@ -296,19 +296,19 @@ void surfaces_dealloc(void* pointer)
 {
     surfaces_t* surfaces = pointer;
 
-    for (int index = 0; index < surfaces->size; index++) mtmem_release(surfaces->strips[index]);
+    for (int index = 0; index < surfaces->size; index++) REL(surfaces->strips[index]);
 
-    mtmem_release(surfaces->strips);
-    mtmem_release(surfaces->groups);
+    REL(surfaces->strips);
+    REL(surfaces->groups);
 }
 
 /* reset surfaces */
 
 void surfaces_reset(surfaces_t* surfaces)
 {
-    for (int index = 0; index < surfaces->size; index++) mtvec_reset(surfaces->strips[index]);
+    for (int index = 0; index < surfaces->size; index++) vec_reset(surfaces->strips[index]);
 
-    mtvec_reset(surfaces->groups);
+    vec_reset(surfaces->groups);
 }
 
 /* adds segment to surfaces */
@@ -335,14 +335,14 @@ void surfaces_addsegment(surfaces_t* surfaces, segment2_t* segment)
 
     for (int colindex = mincol; colindex <= maxcol; colindex++)
     {
-	mtvec_t* group = surfaces->strips[colindex];
-	mtvec_add(group, segment);
+	vec_t* group = surfaces->strips[colindex];
+	VADD(group, segment);
     }
 }
 
 /* returns surrounding segments for vector */
 
-void surfaces_segments_for_mtvec_and_threshold(surfaces_t* surfaces, v2_t trans, v2_t basis, float threshold)
+void surfaces_segments_for_vec_and_threshold(surfaces_t* surfaces, v2_t trans, v2_t basis, float threshold)
 {
     if (surfaces->size == 0) return;
     float minx, maxx;
@@ -368,7 +368,7 @@ void surfaces_segments_for_mtvec_and_threshold(surfaces_t* surfaces, v2_t trans,
     {
 	for (int index = mincol; index <= maxcol; index++)
 	{
-	    mtvec_add(surfaces->groups, surfaces->strips[index]);
+	    VADD(surfaces->groups, surfaces->strips[index]);
 	}
     }
 }
@@ -381,11 +381,11 @@ void physics2_collect_intersecting_surfaces(surfaces_t* surfaces, v2_t trans, v2
 
     if (fabs(basis.x) > 0.0 || fabs(basis.y) > 0.0)
     {
-	surfaces_segments_for_mtvec_and_threshold(surfaces, trans, basis, radius);
+	surfaces_segments_for_vec_and_threshold(surfaces, trans, basis, radius);
 
 	for (int gindex = 0; gindex < surfaces->groups->length; gindex++)
 	{
-	    mtvec_t* group = surfaces->groups->data[gindex];
+	    vec_t* group = surfaces->groups->data[gindex];
 
 	    for (int sindex = 0; sindex < group->length; sindex++)
 	    {
@@ -405,7 +405,7 @@ void physics2_collect_intersecting_surfaces(surfaces_t* surfaces, v2_t trans, v2
 	    }
 	}
 
-	mtvec_reset(surfaces->groups);
+	vec_reset(surfaces->groups);
     }
 }
 
@@ -417,11 +417,11 @@ void physics2_collect_intersecting_and_nearby_surfaces(surfaces_t* surfaces, v2_
 
     if (fabs(basis.x) > 0.0 || fabs(basis.y) > 0.0)
     {
-	surfaces_segments_for_mtvec_and_threshold(surfaces, trans, basis, radius);
+	surfaces_segments_for_vec_and_threshold(surfaces, trans, basis, radius);
 
 	for (int gindex = 0; gindex < surfaces->groups->length; gindex++)
 	{
-	    mtvec_t* group = surfaces->groups->data[gindex];
+	    vec_t* group = surfaces->groups->data[gindex];
 
 	    for (int sindex = 0; sindex < group->length; sindex++)
 	    {
@@ -441,7 +441,7 @@ void physics2_collect_intersecting_and_nearby_surfaces(surfaces_t* surfaces, v2_
 	    }
 	}
 
-	mtvec_reset(surfaces->groups);
+	vec_reset(surfaces->groups);
     }
 }
 
@@ -540,7 +540,7 @@ void physics2_new_mass_position(mass2_t* mass, surfaces_t* surfaces)
 
 /* adds gravity to masses */
 
-void physics2_set_gravity(mtvec_t* masses, v2_t gravity)
+void physics2_set_gravity(vec_t* masses, v2_t gravity)
 {
     for (int massindex = 0;
 	 massindex < masses->length;
@@ -553,7 +553,7 @@ void physics2_set_gravity(mtvec_t* masses, v2_t gravity)
 
 /* adds distance keeping forces */
 
-void physics2_set_distances(mtvec_t* dguards)
+void physics2_set_distances(vec_t* dguards)
 {
     for (int dguardindex = 0;
 	 dguardindex < dguards->length;
@@ -566,7 +566,7 @@ void physics2_set_distances(mtvec_t* dguards)
 
 /* adds angle keeping forces */
 
-void physics2_set_angles(mtvec_t* aguards)
+void physics2_set_angles(vec_t* aguards)
 {
     for (int index = 0;
 	 index < aguards->length;
@@ -579,7 +579,7 @@ void physics2_set_angles(mtvec_t* aguards)
 
 /* sets final position of masses */
 
-void physics2_set_positions(mtvec_t* masses, surfaces_t* surfaces)
+void physics2_set_positions(vec_t* masses, surfaces_t* surfaces)
 {
     for (int index = 0; index < masses->length; index++)
     {

@@ -1,7 +1,7 @@
 #ifndef mtpipe_h
 #define mtpipe_h
 
-#include "mtmem.c"
+#include "zc_memory.c"
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -32,10 +32,10 @@ void      mtpipe_test(void);
 
 mtpipe_t* mtpipe_alloc(uint32_t size)
 {
-    mtpipe_t* boxes = mtmem_calloc(sizeof(mtpipe_t), mtpipe_dealloc);
+    mtpipe_t* boxes = CAL(sizeof(mtpipe_t), mtpipe_dealloc, NULL);
 
-    boxes->flags       = mtmem_calloc(sizeof(char) * size, NULL);
-    boxes->boxes       = mtmem_calloc(sizeof(void*) * size, NULL);
+    boxes->flags       = CAL(sizeof(char) * size, NULL, NULL);
+    boxes->boxes       = CAL(sizeof(void*) * size, NULL, NULL);
     boxes->size        = size;
     boxes->read_index  = 0;
     boxes->write_index = 0;
@@ -51,8 +51,8 @@ void mtpipe_dealloc(void* pointer)
 
     mtpipe_t* boxes = pointer;
 
-    mtmem_release(boxes->flags);
-    mtmem_release(boxes->boxes);
+    REL(boxes->flags);
+    REL(boxes->boxes);
 }
 
 /* send data to other thread */
@@ -123,10 +123,10 @@ void send_test(mtpipe_t* boxes)
     uint32_t counter = 0;
     while (1)
     {
-	uint32_t* number = mtmem_calloc(sizeof(uint32_t), NULL);
+	uint32_t* number = CAL(sizeof(uint32_t), NULL, NULL);
 	*number          = counter;
 	char success     = mtpipe_send(boxes, number);
-	if (success == 0) mtmem_release(number);
+	if (success == 0) REL(number);
 	else counter += 1;
 	if (counter == UINT32_MAX - 1) counter = 0;
 	//            struct timespec time;
@@ -145,7 +145,7 @@ void recv_test(mtpipe_t* boxes)
 	if (number != NULL)
 	{
 	    if (*number != last) printf("index error!!!");
-	    mtmem_release(number);
+	    REL(number);
 	    last += 1;
 	    if (last == UINT32_MAX - 1) last = 0;
 	    if (last % 100000 == 0) printf("%x OK %u %u", (uint32_t) boxes, last, UINT32_MAX);
@@ -161,7 +161,7 @@ mtpipe_t** testarray;
 
 void mtpipe_test()
 {
-    testarray = mtmem_calloc(sizeof(mtpipe_t) * kBoxesTestThreads, NULL);
+    testarray = CAL(sizeof(mtpipe_t) * kBoxesTestThreads, NULL, NULL);
 
     for (int index = 0; index < kBoxesTestThreads; index++)
     {

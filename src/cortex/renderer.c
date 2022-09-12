@@ -22,7 +22,6 @@
 #include "defaults.c"
 #include "floatbuffer.c"
 #include "math4.c"
-#include "mtvec.c"
 #include <stdint.h>
 
 typedef struct _renderdata_t
@@ -213,7 +212,7 @@ void renderer_init(
 
     memset(rnd.vbos, 0, sizeof(GLuint) * 32);
 
-    SET(rnd.dynamicbuffer, floatbuffer_alloc());
+    rnd.dynamicbuffer = floatbuffer_alloc();
 
     rnd.defaultFrameBuffer  = defFrameBuffer;
     rnd.defaultRenderBuffer = defRenderBuffer;
@@ -251,8 +250,8 @@ void renderer_init(
 void renderer_free(
     void)
 {
-
-    RPL(rnd.dynamicbuffer, NULL);
+    if (rnd.dynamicbuffer) REL(rnd.dynamicbuffer);
+    rnd.dynamicbuffer = NULL;
 }
 
 void renderer_reset_buffers(

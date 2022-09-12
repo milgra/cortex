@@ -5,13 +5,13 @@
 #include "maincube.c"
 #include "mtbus.c"
 #include "mtstr.c"
-#include "mtvec.c"
+#include "zc_vector.c"
 
 typedef struct _script_t script_t;
 struct _script_t
 {
 
-    mtvec_t* list;
+    vec_t*   list;
     uint32_t index;
     uint32_t frame_next;
 
@@ -45,7 +45,7 @@ void script_init(
     void)
 {
 
-    script.list  = mtvec_alloc();
+    script.list  = VNEW();
     script.label = NULL;
 }
 
@@ -60,7 +60,7 @@ void script_reset(
     void)
 {
 
-    mtvec_reset(script.list);
+    vec_reset(script.list);
 
     script.index      = 0;
     script.frame_next = 0;
@@ -75,9 +75,9 @@ void script_load_item(
 
     if (script.list->length == 0) return;
 
-    mtmap_t* item = script.list->data[index];
+    map_t* item = script.list->data[index];
 
-    mtstr_t* next = mtmap_get(item, "next");
+    mtstr_t* next = MGET(item, "next");
 
     if (next != NULL)
     {
@@ -91,7 +91,7 @@ void script_load_item(
 
     generator_setup(item);
 
-    mtstr_t* label = mtmap_get(item, "label");
+    mtstr_t* label = MGET(item, "label");
 
     if (label != NULL)
     {
@@ -119,7 +119,7 @@ void script_load_item(
 
     // cube
 
-    mtstr_t* cube = mtmap_get(item, "cube");
+    mtstr_t* cube = MGET(item, "cube");
 
     if (cube != NULL)
     {
@@ -131,8 +131,8 @@ void script_load_item(
 
     if (index + 1 < script.list->length)
     {
-	mtmap_t* nextline   = script.list->data[index + 1];
-	mtstr_t* frametoken = mtmap_get(nextline, "frame");
+	map_t*   nextline   = script.list->data[index + 1];
+	mtstr_t* frametoken = MGET(nextline, "frame");
 	if (frametoken != NULL) script.frame_next = mtstr_intvalue(frametoken);
     }
 }
@@ -142,7 +142,7 @@ void script_load(
 {
 
     mtstr_t* string = mtstr_frombytes(descriptor);
-    mtvec_t* lines  = mtstr_split(string, '\n');
+    vec_t*   lines  = mtstr_split(string, '\n');
 
     for (int lineindex = 0;
 	 lineindex < lines->length;
@@ -150,13 +150,13 @@ void script_load(
     {
 
 	mtstr_t* line = lines->data[lineindex];
-	mtmap_t* map  = mtstr_tokenize(line);
-	mtvec_add(script.list, map);
-	mtmem_release(map);
+	map_t*   map  = mtstr_tokenize(line);
+	vec_add(script.list, map);
+	REL(map);
     }
 
-    mtmem_release(string);
-    mtmem_release(lines);
+    REL(string);
+    REL(lines);
 
     script_load_item(0);
 }

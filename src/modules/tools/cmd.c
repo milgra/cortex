@@ -1,7 +1,7 @@
 #ifndef cmd_h
 #define cmd_h
 
-#include "mtvec.c"
+#include "zc_vector.c"
 #include <stdio.h>
 
 typedef struct _cmd_t cmd_t;
@@ -19,9 +19,9 @@ void   cmd_dealloc(void* cmd);
 typedef struct _cmdqueue_t cmdqueue_t;
 struct _cmdqueue_t
 {
-    mtvec_t* commands;
-    mtvec_t* delayed;
-    char     is_iterating;
+    vec_t* commands;
+    vec_t* delayed;
+    char   is_iterating;
 };
 
 cmdqueue_t* cmdqueue_alloc(void);
@@ -39,8 +39,8 @@ void        cmdqueue_reset(cmdqueue_t* queue);
 #if __INCLUDE_LEVEL__ == 0
 
 #include "../core/mtcstr.c"
-#include "../core/mtmem.c"
 #include "../core/mtstr.c"
+#include "zc_memory.c"
 #include <string.h>
 
 /* alloc command */
@@ -48,11 +48,11 @@ void        cmdqueue_reset(cmdqueue_t* queue);
 cmd_t* cmd_alloc(char* name, void* data, void* args)
 {
     assert(name != NULL);
-    cmd_t* cmd = mtmem_calloc(sizeof(cmd_t), cmd_dealloc);
+    cmd_t* cmd = CAL(sizeof(cmd_t), cmd_dealloc, NULL);
 
     cmd->name = mtcstr_fromcstring(name);
-    cmd->data = mtmem_retain(data);
-    cmd->args = mtmem_retain(args);
+    cmd->data = RET(data);
+    cmd->args = RET(args);
 
     return cmd;
 }
@@ -63,19 +63,19 @@ void cmd_dealloc(void* pointer)
 {
     cmd_t* cmd = pointer;
 
-    if (cmd->name != NULL) mtmem_release(cmd->name);
-    if (cmd->data != NULL) mtmem_release(cmd->data);
-    if (cmd->args != NULL) mtmem_release(cmd->args);
+    if (cmd->name != NULL) REL(cmd->name);
+    if (cmd->data != NULL) REL(cmd->data);
+    if (cmd->args != NULL) REL(cmd->args);
 }
 
 /* alloc command queue */
 
 cmdqueue_t* cmdqueue_alloc()
 {
-    cmdqueue_t* queue = mtmem_calloc(sizeof(cmdqueue_t), cmdqueue_dealloc);
+    cmdqueue_t* queue = CAL(sizeof(cmdqueue_t), cmdqueue_dealloc, NULL);
 
-    queue->commands = mtvec_alloc();
-    queue->delayed  = mtvec_alloc();
+    queue->commands = VNEW();
+    queue->delayed  = VNEW();
 
     return queue;
 }
@@ -86,8 +86,8 @@ void cmdqueue_dealloc(void* pointer)
 {
     cmdqueue_t* queue = pointer;
 
-    mtmem_release(queue->commands);
-    mtmem_release(queue->delayed);
+    REL(queue->commands);
+    REL(queue->delayed);
 }
 
 /* sets iteration */
@@ -101,7 +101,7 @@ void cmdqueue_setiteration(cmdqueue_t* queue)
 
 void cmdqueue_reset(cmdqueue_t* queue)
 {
-    mtvec_reset(queue->commands);
+    vec_reset(queue->commands);
     queue->is_iterating = 0;
 }
 
@@ -110,15 +110,15 @@ void cmdqueue_reset(cmdqueue_t* queue)
 void cmdqueue_add(cmdqueue_t* queue, char* name, void* data, void* args)
 {
     cmd_t* cmd = cmd_alloc(name, data, args);
-    mtvec_add(queue->commands, cmd);
-    mtmem_release(cmd);
+    VADD(queue->commands, cmd);
+    REL(cmd);
 }
 
 /* add command to queue */
 
 void cmdqueue_addcmd(cmdqueue_t* queue, cmd_t* cmd)
 {
-    mtvec_add(queue->commands, cmd);
+    VADD(queue->commands, cmd);
 }
 
 /* add command to queue if not exists in queue */
@@ -140,8 +140,8 @@ void cmdqueue_delay(cmdqueue_t* queue, char* name, void* data, void* args, uint3
 {
     cmd_t* cmd = cmd_alloc(name, data, args);
     cmd->time  = time;
-    mtvec_add(queue->delayed, cmd);
-    mtmem_release(cmd);
+    VADD(queue->delayed, cmd);
+    REL(cmd);
 }
 
 /* command queue iteration */
@@ -156,8 +156,8 @@ void cmdqueue_timer(cmdqueue_t* queue, uint32_t time)
 
 	    if (cmd->time == time)
 	    {
-		mtvec_add(queue->commands, cmd);
-		mtvec_remove(queue->delayed, cmd);
+		VADD(queue->commands, cmd);
+		VREM(queue->delayed, cmd);
 		return;
 	    }
 	}

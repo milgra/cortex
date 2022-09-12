@@ -13,28 +13,28 @@ void mtbus_unsubscribe(const char* address, void (*onmessage)(const char*, void*
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "mtmap.c"
-#include "mtmem.c"
-#include "mtvec.c"
+#include "zc_map.c"
+#include "zc_memory.c"
+#include "zc_vector.c"
 
 typedef struct _mtbus_fp
 {
     void (*onmessage)(const char*, void*);
 } mtbus_fp;
 
-mtmap_t* mtbus_subscribers = NULL;
+map_t* mtbus_subscribers = NULL;
 
 void mtbus_init()
 {
     if (mtbus_subscribers == NULL)
     {
-	mtbus_subscribers = mtmap_alloc();
+	mtbus_subscribers = MNEW();
     }
 }
 
 void mtbus_free()
 {
-    mtmem_release(mtbus_subscribers);
+    REL(mtbus_subscribers);
     mtbus_subscribers = NULL;
 }
 
@@ -42,7 +42,7 @@ void mtbus_free()
 
 void mtbus_notify(const char* source, const char* name, void* data)
 {
-    mtvec_t* listeners = mtmap_get(mtbus_subscribers, source);
+    vec_t* listeners = MGET(mtbus_subscribers, source);
     if (listeners != NULL)
     {
 	for (int index = 0; index < listeners->length; index++)
@@ -55,24 +55,24 @@ void mtbus_notify(const char* source, const char* name, void* data)
 
 void mtbus_subscribe(const char* source, void (*onmessage)(const char*, void*))
 {
-    mtvec_t* listeners = mtmap_get(mtbus_subscribers, source);
+    vec_t* listeners = MGET(mtbus_subscribers, source);
     if (listeners == NULL)
     {
-	listeners = mtvec_alloc();
-	mtmap_put(mtbus_subscribers, source, listeners);
+	listeners = VNEW();
+	MPUT(mtbus_subscribers, source, listeners);
     }
 
-    mtbus_fp* data  = mtmem_alloc(sizeof(mtbus_fp), NULL);
+    mtbus_fp* data  = CAL(sizeof(mtbus_fp), NULL, NULL);
     data->onmessage = onmessage;
-    mtvec_add(listeners, data);
+    VADD(listeners, data);
 }
 
 void mtbus_unsubscribe(const char* address, void (*onmessage)(const char*, void*))
 {
-    mtvec_t* listeners = mtmap_get(mtbus_subscribers, address);
+    vec_t* listeners = map_get(mtbus_subscribers, address);
     if (listeners != NULL)
     {
-	mtvec_remove(listeners, onmessage);
+	VREM(listeners, onmessage);
     }
 }
 
