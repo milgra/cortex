@@ -1,7 +1,8 @@
 #ifndef pixeltext_h
 #define pixeltext_h
 
-#include "math2.c"
+#include "zc_util2.c"
+#include "zc_vec2.c"
 #include "zc_vector.c"
 #include <stdio.h>
 

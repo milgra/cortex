@@ -1,7 +1,9 @@
 #ifndef defaults_h
 #define defaults_h
 
-#include "math2.c"
+#include "zc_util2.c"
+#include "zc_vec2.c"
+
 #include "math3.c"
 #include <stdlib.h>
 

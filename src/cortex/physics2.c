@@ -1,7 +1,9 @@
 #ifndef physics2_h
 #define physics2_h
 
-#include "math2.c"
+#include "zc_util2.c"
+#include "zc_vec2.c"
+
 #include "zc_vector.c"
 #include <math.h>
 #include <stdio.h>

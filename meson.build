@@ -32,6 +32,7 @@ cortex_inc = include_directories(
 	'src/cortex',
 	'src/modules',
 	'src/modules/core',
+	'src/modules/math',
 	'src/modules/tools',
 	'src/modules/utils')
 
@@ -50,29 +51,29 @@ com_sources = ['src/cortex/bridge.c',
 	       'src/cortex/scene.c',
 	       'src/cortex/script.c',
 	       'src/cortex/voxel.c',
+	       'src/cortex/cmd.c',
+	       'src/cortex/floatbuffer.c',
+	       'src/cortex/ogl.c',
+	       'src/cortex/physics2.c',
+	       'src/cortex/pixeltext.c',
+	       'src/cortex/settings.c',
+	       'src/cortex/triangulate.c',
+	       'src/cortex/mtbus.c',
+	       'src/cortex/mtfile.c',
 
-	       'src/modules/core/mtbus.c',
 	       'src/modules/core/zc_cstring.c',
-	       'src/modules/core/mtfile.c',
 	       'src/modules/core/zc_map.c',
 	       'src/modules/core/zc_memory.c',
-	       'src/modules/core/mtpipe.c',
 	       'src/modules/core/zc_string.c',
 	       'src/modules/core/zc_vector.c',
 
-	       'src/modules/utils/str_util.c',
+	       'src/modules/math/zc_vec2.c',
+	       'src/modules/math/zc_util2.c',
 
-	       'src/modules/tools/cmd.c',
-	       'src/modules/tools/floatbuffer.c',
-	       'src/modules/tools/math1.c',
-	       'src/modules/tools/math2.c',
 	       'src/modules/tools/math3.c',
 	       'src/modules/tools/math4.c',
-	       'src/modules/tools/ogl.c',
-	       'src/modules/tools/physics2.c',
-	       'src/modules/tools/pixeltext.c',
-	       'src/modules/tools/settings.c',
-	       'src/modules/tools/triangulate.c']
+
+	       'src/modules/utils/str_util.c']
 
 pkg_datadir = join_paths(get_option('prefix'), get_option('datadir')) / 'sov'
 install_data('res/break.wav', install_dir : pkg_datadir )

@@ -55,6 +55,7 @@ void renderer_reset_buffers(
 #include "ogl.c"
 #include "voxel.c"
 #include <float.h>
+#include <string.h>
 
 #if defined(IOS) || defined(ANDROID) || defined(ASMJS)
 

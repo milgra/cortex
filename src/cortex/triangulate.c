@@ -13,7 +13,9 @@ char  triangulate_snip(vec_t* contour, int u, int v, int w, int n, int* V);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "math2.c"
+#include "zc_util2.c"
+#include "zc_vec2.c"
+
 #include "zc_memory.c"
 
 #define EPSILON 0.0000000001f
