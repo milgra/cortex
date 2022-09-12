@@ -56,6 +56,7 @@ generator_t generator;
 
 #include "generator.c"
 #include "zc_string.c"
+#include "zc_vec4.c"
 #include <string.h>
 
 void generator_init(

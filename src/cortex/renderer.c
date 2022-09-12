@@ -21,7 +21,7 @@
 
 #include "defaults.c"
 #include "floatbuffer.c"
-#include "math4.c"
+#include "zc_mat4.c"
 #include <stdint.h>
 
 typedef struct _renderdata_t

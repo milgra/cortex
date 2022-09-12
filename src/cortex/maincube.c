@@ -1,7 +1,9 @@
 #ifndef maincube_h
 #define maincube_h
 
-#include "math3.c"
+#include "zc_mat3.c"
+#include "zc_util3.c"
+
 #include "voxel.c"
 
 typedef struct _maincube_t maincube_t;

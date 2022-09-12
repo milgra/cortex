@@ -28,9 +28,9 @@
 #include "zc_util2.c"
 #include "zc_vec2.c"
 
-#include "math3.c"
-#include "math4.c"
+#include "zc_mat3.c"
 #include "zc_memory.c"
+#include "zc_util3.c"
 
 typedef struct floatbuffer_t floatbuffer_t;
 struct floatbuffer_t
