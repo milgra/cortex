@@ -171,7 +171,7 @@ map_t* str_tokenize(str_t* descriptor)
     vec_t* tokens = str_split(descriptor, ' ');
     for (int index = 0; index < tokens->length; index += 2)
     {
-	char* key = str_frombytes(tokens->data[index]);
+	char* key = str_new_cstring(tokens->data[index]);
 	MPUT(map, key, tokens->data[index + 1]);
 	REL(key);
     }

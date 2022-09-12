@@ -111,10 +111,9 @@ void main_onmessage(
 	}
 	else Mix_ResumeMusic();
 
-	scene_loadmsg_t msg =
-	    {
-		15.0,
-		defaults.stage_a};
+	scene_loadmsg_t msg = {
+	    15.0,
+	    defaults.stage_a};
 
 	bus_notify(
 	    "CTL",

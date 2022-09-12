@@ -65,7 +65,7 @@ void script_reset(
     script.index      = 0;
     script.frame_next = 0;
 
-    REL(script.label);
+    if (script.label) REL(script.label);
     script.label = NULL;
 }
 
@@ -80,7 +80,6 @@ void script_load_item(
 
     if (next != NULL)
     {
-
 	bus_notify(
 	    "SCN",
 	    "NEXTSCENE",
@@ -99,20 +98,18 @@ void script_load_item(
 	     index < label->length;
 	     index++)
 	{
-
 	    if (label->codepoints[index] == '_')
 	    {
-
 		label->codepoints[index] = ' ';
 	    }
 	}
 
-	REL(script.label);
+	if (script.label) REL(script.label);
 	script.label = str_new_cstring(label);
     }
     else
     {
-	REL(script.label);
+	if (script.label) REL(script.label);
 	script.label = NULL;
     }
 
@@ -146,11 +143,10 @@ void script_load(
 	 lineindex < lines->length;
 	 lineindex++)
     {
-
 	str_t* line = lines->data[lineindex];
-	map_t* map  = str_tokenize(line);
-	vec_add(script.list, map);
-	REL(map);
+
+	map_t* map = str_tokenize(line);
+	VADDR(script.list, map);
     }
 
     REL(string);
@@ -164,7 +160,6 @@ void script_update(
 {
     if (frame == script.frame_next)
     {
-
 	script_load_item(++script.index);
     }
 }

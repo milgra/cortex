@@ -232,12 +232,10 @@ void scene_collectvoxels(
 	 col < COLCOUNT;
 	 col++)
     {
-
 	voxel_t cube = scene.newsegment[row][col];
 
 	if (cube.model.z > -601.0)
 	{
-
 	    voxel_t white   = cube;
 	    white.model.d   = 20.0;
 	    white.model.z   = -580.0;
@@ -252,7 +250,6 @@ void scene_collectvoxels(
 
 	if (cube.model.z > -1200.0)
 	{
-
 	    voxel_collect_points(
 		&cube,
 		buffers.buffertemp);
@@ -283,7 +280,6 @@ void scene_fillbuffer_iteration(
 {
     if (scene.generator_run == 1)
     {
-
 	generator_generate_row(
 	    scene.generated_row,
 	    scene.segmentbottompos);
@@ -301,7 +297,6 @@ void scene_fillbuffer_iteration(
 
 	if (scene.generated_row == ROWCOUNT)
 	{
-
 	    scene.generator_run = 0;
 	    scene.generated_row = 0;
 	}
@@ -326,7 +321,6 @@ void scene_swapsegments(
 	 row < ROWCOUNT;
 	 row++)
     {
-
 	void* target = &scene.segments[scene.segmentstartindex + row];
 	void* source = &scene.newsegment[row];
 
@@ -339,7 +333,6 @@ void scene_swapsegments(
 	 row < ROWCOUNT;
 	 row++)
     {
-
 	scene_collectvoxels(scene.generated_row);
     }
 
@@ -656,7 +649,6 @@ void scene_load(
 
     if (scene.needsfillup == 1)
     {
-
 	scene.needsfillup = 0;
 	scene_swapsegments();
 
@@ -664,7 +656,6 @@ void scene_load(
 	     index < ROWCOUNT;
 	     index++)
 	{
-
 	    scene_fillbuffer_iteration();
 	}
     }
