@@ -21,7 +21,7 @@ typedef struct _scene_loadmsg_t scene_loadmsg_t;
 struct _scene_loadmsg_t
 {
     float speed;
-    char  stage;
+    int   stage;
 };
 
 typedef struct _scene_t scene_t;

@@ -2,7 +2,7 @@ project(
   'cortex',
   'c',
   version: '0.8',
-  license: 'MIT',
+  license: 'GPL',
   default_options: ['c_std=gnu99']
 )
 
@@ -19,7 +19,7 @@ pthread = cc.find_library('pthread',static:false)
 cortex_dependencies = [math,gl,glew,sdl,sdlmixer,pthread]
 
 cortex_version = '"@0@"'.format(meson.project_version())
-pkg_datadir = join_paths(get_option('prefix'), get_option('datadir')) / 'sov'
+pkg_datadir = join_paths(get_option('prefix'), get_option('datadir')) / 'cortex'
 add_project_arguments('-DPKG_DATADIR="' + pkg_datadir + '"',
 		      '-DCORTEX_VERSION=@0@'.format(cortex_version),
 		      language: 'c')
@@ -78,7 +78,6 @@ com_sources = ['src/cortex/buffers.c',
 
 	       'src/modules/utils/str_util.c']
 
-pkg_datadir = join_paths(get_option('prefix'), get_option('datadir')) / 'sov'
 install_data('res/break.wav', install_dir : pkg_datadir )
 install_data('res/game.wav', install_dir : pkg_datadir )
 install_data('res/outro.wav', install_dir : pkg_datadir )
