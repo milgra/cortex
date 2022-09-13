@@ -567,7 +567,7 @@ void scene_generate_labels(
     if (scene.timer >= 0)
     {
 	char text[10];
-	snprintf(text, 10, "%i", scene.timer);
+	snprintf(text, 11, "%i", scene.timer);
 
 	scene_label(
 	    text,
