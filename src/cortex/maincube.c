@@ -11,7 +11,6 @@
 typedef struct _maincube_t maincube_t;
 struct _maincube_t
 {
-
     v3_t    dir;
     char    visible;
     float   angle;

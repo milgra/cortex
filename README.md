@@ -23,18 +23,45 @@ Shader trick. As you see the shader files are not valid shader files, they are C
 
 ### Files
 
+buffers.c - Vertex buffers for different layers of the scene
+
+bus.c - Message bus for inter-module communication
+
+defaults.c - Settings and defaults
+
+excavator.c - Route excavator for scene
+
+file.c - Config file handling
+
+floatbuffer.c - Float  collector for opengl vertex buffer
+
+generator.c - Scene generator
+
+levels.c - Level descriptions
+
 main.c - SDL handling, top level event handling
 
-ui.c - ui handling rendering ( main module )
+maincube.c - Main cube state
 
-scene.c - scene handling and rendering ( main module )
+menu.c - Main menu handling
 
-renderer.c - rendering ( main module )
+ogl.c - OpenGL functions
+
+particle.c - Particle effect generator
+
+pixeltext.c - Pixel text renderer
+
+renderer.c - OpenGL rendering
+
+scene.c - Scene handling and rendering
+
+script.c - Scene script reader
+
+settings.c - Settings handler
+
+voxel.c - Voxel state
 
 ### TODO
 
-add logging
-remove leaks
-test levels
-add doc
 keyboard control in menu
+rethink scene generation, it's hard to understand currently and flipping is visible on narrow screens
