@@ -145,10 +145,9 @@ void main_onmessage(
 	}
 	else Mix_ResumeMusic();
 
-	scene_loadmsg_t msg =
-	    {
-		30.0,
-		defaults.stage_b};
+	scene_loadmsg_t msg = {
+	    30.0,
+	    defaults.stage_b};
 
 	bus_notify(
 	    "CTL",
@@ -172,10 +171,9 @@ void main_onmessage(
 	}
 	else Mix_ResumeMusic();
 
-	scene_loadmsg_t msg =
-	    {
-		35.0,
-		defaults.stage_c};
+	scene_loadmsg_t msg = {
+	    35.0,
+	    defaults.stage_c};
 
 	bus_notify(
 	    "CTL",
@@ -192,10 +190,9 @@ void main_onmessage(
 		Mix_PlayMusic(outromusic, -1);
 		Mix_VolumeMusic(64);
 
-		scene_loadmsg_t msg =
-		    {
-			scene.speed,
-			7};
+		scene_loadmsg_t msg = {
+		    scene.speed,
+		    7};
 
 		bus_notify(
 		    "CTL",
@@ -204,10 +201,9 @@ void main_onmessage(
 	    }
 	    else
 	    {
-		scene_loadmsg_t msg =
-		    {
-			scene.speed,
-			6};
+		scene_loadmsg_t msg = {
+		    scene.speed,
+		    6};
 
 		bus_notify(
 		    "CTL",
@@ -220,10 +216,9 @@ void main_onmessage(
 	    defaults.currentstage += 1;
 	    defaults_save();
 
-	    scene_loadmsg_t msg =
-		{
-		    scene.speed,
-		    defaults.currentstage};
+	    scene_loadmsg_t msg = {
+		scene.speed,
+		defaults.currentstage};
 
 	    bus_notify(
 		"CTL",
@@ -609,7 +604,6 @@ int main(int argc, char* argv[])
 	    width,
 	    height,
 	    SDL_WINDOW_OPENGL |
-		SDL_WINDOW_SHOWN |
 		SDL_WINDOW_RESIZABLE |
 		SDL_WINDOW_ALLOW_HIGHDPI |
 		SDL_WINDOW_SHOWN);

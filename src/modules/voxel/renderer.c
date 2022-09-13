@@ -45,49 +45,24 @@ void renderer_reset_buffers(
 #include <float.h>
 #include <string.h>
 
-#if defined(IOS) || defined(ANDROID) || defined(ASMJS)
-
 char* glow_vsh =
-    #include "shaders/glow_es.vsh"
+#include "shaders/glow.vsh"
     ;
 char* glow_fsh =
-    #include "shaders/glow_es.fsh"
+#include "shaders/glow.fsh"
     ;
 char* blur_vsh =
-    #include "shaders/blur_es.vsh"
+#include "shaders/blur.vsh"
     ;
 char* blur_fsh =
-    #include "shaders/blur_es.fsh"
+#include "shaders/blur.fsh"
     ;
 char* blend_vsh =
-    #include "shaders/blend_es.vsh"
+#include "shaders/blend.vsh"
     ;
 char* blend_fsh =
-    #include "shaders/blend_es.fsh"
+#include "shaders/blend.fsh"
     ;
-
-#else
-
-char* glow_vsh =
-    #include "shaders/glow.vsh"
-    ;
-char* glow_fsh =
-    #include "shaders/glow.fsh"
-    ;
-char* blur_vsh =
-    #include "shaders/blur.vsh"
-    ;
-char* blur_fsh =
-    #include "shaders/blur.fsh"
-    ;
-char* blend_vsh =
-    #include "shaders/blend.vsh"
-    ;
-char* blend_fsh =
-    #include "shaders/blend.fsh"
-    ;
-
-#endif
 
 const char* uniforms_game[]   = {"2", "projection", "lightmap"};
 const char* attributes_game[] = {"2", "position", "color"};
@@ -144,7 +119,6 @@ struct renderer_t
     m4_t     projections[32];
 
     floatbuffer_t* dynamicbuffer;
-
 } rnd;
 
 void renderer_delete_framebuffers(
@@ -247,7 +221,6 @@ void renderer_reset_buffers(
 	 index < 32;
 	 index++)
     {
-
 	rnd.vbocounts[index] = 0;
     }
 }
@@ -288,12 +261,8 @@ void renderer_update_matrix(
 void renderer_draw_unit_quad(
     void)
 {
-    GLfloat vertexes[] =
-	{
-
-	    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f
-
-	};
+    GLfloat vertexes[] = {
+	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
 
     glBindBuffer(
 	GL_ARRAY_BUFFER,
@@ -321,7 +290,6 @@ void renderer_render_scene(
 	 index < levelmap[0];
 	 index++)
     {
-
 	int level = levelmap[1 + index];
 	int draw  = drawmap[1 + index];
 
@@ -434,7 +402,6 @@ void renderer_render(
 
     if (defaults.effects_level > 0)
     {
-
 	// render scene with full color if layer is glowing, with blank if not
 
 	glBindFramebuffer(

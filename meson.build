@@ -37,7 +37,8 @@ cortex_inc = include_directories(
 	'src/modules',
 	'src/modules/core',
 	'src/modules/math',
-	'src/modules/utils')
+	'src/modules/utils',
+	'src/modules/voxel')
 
 
 com_sources = ['src/cortex/buffers.c',
@@ -49,16 +50,9 @@ com_sources = ['src/cortex/buffers.c',
 	       'src/cortex/maincube.c',
 	       'src/cortex/menu.c',
 	       'src/cortex/particle.c',
-	       'src/cortex/renderer.c',
 	       'src/cortex/scene.c',
 	       'src/cortex/script.c',
-	       'src/cortex/voxel.c',
-	       'src/cortex/floatbuffer.c',
-	       'src/cortex/ogl.c',
 	       'src/cortex/pixeltext.c',
-	       'src/cortex/settings.c',
-	       'src/cortex/bus.c',
-	       'src/cortex/file.c',
 
 	       'src/modules/core/zc_cstring.c',
 	       'src/modules/core/zc_map.c',
@@ -75,6 +69,14 @@ com_sources = ['src/cortex/buffers.c',
 	       'src/modules/math/zc_util3.c',
 	       'src/modules/math/zc_vec4.c',
 	       'src/modules/math/zc_mat4.c',
+
+	       'src/modules/voxel/file.c',
+       	       'src/modules/voxel/floatbuffer.c',	
+	       'src/modules/voxel/ogl.c',
+	       'src/modules/voxel/renderer.c',
+	       'src/modules/voxel/settings.c',
+	       'src/modules/voxel/voxel.c',
+	       'src/modules/voxel/bus.c',
 
 	       'src/modules/utils/str_util.c']
 
