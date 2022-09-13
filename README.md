@@ -52,10 +52,10 @@ voxel.c - Voxel state
 
 ### Tech info
 
-Cortex is a pure C project written in [headerless C](https://github.com/milgra/headerlessc).
-It uses reference-counted memory management ( zc_memory.c ).
-It uses modular programming with mediator - implementation groups with different functionality don't include each other directly, they send messages to each other.
-If a module is "static" a global variable is used to store it's state, instancing is meaningless .
+Cortex is a pure C project written in [headerless C](https://github.com/milgra/headerlessc).  
+It uses reference-counted memory management ( zc_memory.c ).  
+It uses modular programming with mediator - implementation groups with different functionality that don't include each other directly, they send messages to each other.  
+If a module is "static" a global variable is used to store it's state, instancing is meaningless .  
 
 ### TODO
 
