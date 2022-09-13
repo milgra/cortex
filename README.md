@@ -31,10 +31,10 @@ scene.c - scene handling and rendering ( main module )
 
 renderer.c - rendering ( main module )
 
-
 ### TODO
 
 add logging
 remove leaks
 test levels
 add doc
+keyboard control in menu

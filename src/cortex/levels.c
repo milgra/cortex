@@ -15,12 +15,8 @@ extern char* stage5;
 #if __INCLUDE_LEVEL__ == 0
 
 char* intro =
-    "frame 0 cube 0 label MOVE_WITH red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"
-#if defined(IOS) || defined(ANDROID)
-    "frame 120 label LEFT/RIGHT_TAP\n"
-#else
-    "frame 120 label LEFT/RIGHT_ARROW\n"
-#endif
+    "frame 0 cube 0 label CONTROL_WITH red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"
+    "frame 120 label LEFT/RIGHT/RETURN\n"
     "frame 200 label _\n"
     "frame 250 label GO\n"
     "frame 300 label WITH_THE_FLOW red 0.3 green 0.3 blue .8 diffA 1.0 diffB 1.0 diffC 1.0 diffD 1.0 widthA 40 widthB 40 widthC 40 widthD 40 modeA linear modeB still modeC still modeD still\n"

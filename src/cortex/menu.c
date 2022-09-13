@@ -483,7 +483,6 @@ void menu_touch_down(
 
 	if (is.x != FLT_MAX)
 	{
-
 	    if (index == 0) bus_notify("MNU", "LEVELA", NULL);
 	    else if (index == 1) bus_notify("MNU", "LEVELB", NULL);
 	    else if (index == 2) bus_notify("MNU", "LEVELC", NULL);

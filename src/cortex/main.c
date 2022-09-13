@@ -262,7 +262,7 @@ void main_init(
 
     defaults_init();
 
-    bus_init();
+    bus_init(); // FREE
 
     bus_subscribe(
 	"MNU",
@@ -323,9 +323,9 @@ void main_init(
     outromusic = Mix_LoadMUS(outrosndpath);
     breaksound = Mix_LoadWAV(breaksndpath);
 
-    if (!gamemusic) printf("Couldn't load gamemusic from %s\n", gamesndpath);
-    if (!outromusic) printf("Couldn't load gamemusic from %s\n", outrosndpath);
-    if (!breaksound) printf("Couldn't load gamemusic from %s\n", breaksndpath);
+    if (!gamemusic) zc_log_error("Couldn't load gamemusic from %s\n", gamesndpath);
+    if (!outromusic) zc_log_error("Couldn't load gamemusic from %s\n", outrosndpath);
+    if (!breaksound) zc_log_error("Couldn't load gamemusic from %s\n", breaksndpath);
 
     REL(gamesndpath);
     REL(outrosndpath);
@@ -405,15 +405,11 @@ void main_loop(
 		    width  = event.window.data1;
 		    height = event.window.data2;
 
-		    v2_t dimensions =
-			{
+		    v2_t dimensions = {
+			.x = width * scale,
+			.y = height * scale};
 
-			    .x = width * scale,
-			    .y = height * scale
-
-			};
-
-		    printf("resized %f %f\n", dimensions.x, dimensions.y);
+		    zc_log_debug("resized %f %f", dimensions.x, dimensions.y);
 
 		    defaults.display_size = dimensions;
 
@@ -554,14 +550,14 @@ int main(int argc, char* argv[])
 
     // init audio
 
-    if (SDL_Init(SDL_INIT_AUDIO) != 0) printf("SDL Audio init error %s\n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_AUDIO) != 0) zc_log_error("SDL Audio init error %s\n", SDL_GetError());
 
     Uint16 audio_format   = AUDIO_S16SYS;
     int    audio_rate     = 44100;
     int    audio_channels = 1;
     int    audio_buffers  = 4096;
 
-    if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
+    if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) zc_log_error("Unable to initialize audio: %s\n", Mix_GetError());
 
     // init sdl
 
@@ -627,9 +623,8 @@ int main(int argc, char* argv[])
 		GLint GlewInitResult = glewInit();
 		if (GLEW_OK != GlewInitResult)
 		{
-		    printf("ERROR: %s", glewGetErrorString(GlewInitResult));
+		    zc_log_error("Glew init error %s", glewGetErrorString(GlewInitResult));
 		}
-		else printf("GLEW OKAY\n");
 
 		// calculate scaling
 
@@ -645,7 +640,7 @@ int main(int argc, char* argv[])
 
 		// try to set up vsync
 
-		if (SDL_GL_SetSwapInterval(1) < 0) printf("SDL swap interval error %s\n", SDL_GetError());
+		if (SDL_GL_SetSwapInterval(1) < 0) zc_log_error("SDL swap interval error %s", SDL_GetError());
 
 		main_init();
 		main_loop();
@@ -655,21 +650,28 @@ int main(int argc, char* argv[])
 
 		SDL_GL_DeleteContext(context);
 	    }
-	    else printf("SDL context creation error %s\n", SDL_GetError());
+	    else zc_log_error("SDL context creation error %s", SDL_GetError());
 
 	    // cleanup
 
 	    SDL_DestroyWindow(window);
 	}
-	else printf("SDL window creation error %s\n", SDL_GetError());
+	else zc_log_error("SDL window creation error %s", SDL_GetError());
 
 	// cleanup
 
 	SDL_Quit();
     }
-    else printf("SDL init error %s\n", SDL_GetError());
+    else zc_log_error("SDL init error %s", SDL_GetError());
 
     Mix_CloseAudio();
+
+    if (res_par) REL(res_par);
+    REL(wrk_path);
+
+#ifdef DEBUG
+    //    mem_stats();
+#endif
 
     return 0;
 }

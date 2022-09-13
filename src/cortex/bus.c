@@ -61,12 +61,12 @@ void bus_subscribe(const char* source, void (*onmessage)(const char*, void*))
     if (listeners == NULL)
     {
 	listeners = VNEW();
-	MPUT(bus_subscribers, source, listeners);
+	MPUTR(bus_subscribers, source, listeners);
     }
 
     bus_fp* data    = CAL(sizeof(bus_fp), NULL, NULL);
     data->onmessage = onmessage;
-    VADD(listeners, data);
+    VADDR(listeners, data);
 }
 
 void bus_unsubscribe(const char* address, void (*onmessage)(const char*, void*))

@@ -958,11 +958,9 @@ void scene_touch_down(
 
     if (defaults.state == kStateGame)
     {
-
 	if (scene.state == STATE_DEAD ||
 	    scene.state == STATE_FINISHED)
 	{
-
 	    scene.speed = 0.0;
 	    bus_notify(
 		"SCN",
@@ -972,7 +970,6 @@ void scene_touch_down(
 
 	if (coord.x < defaults.display_size.x / 2.0)
 	{
-
 	    scene.leftdown = 1;
 	    maincube_set_direction(
 		-1,
@@ -980,7 +977,6 @@ void scene_touch_down(
 	}
 	else
 	{
-
 	    scene.rightdown = 1;
 	    maincube_set_direction(
 		1,
@@ -998,7 +994,6 @@ void scene_touch_up(
 
     if (coord.x < defaults.display_size.x / 2.0)
     {
-
 	scene.leftdown = 0;
 	maincube_set_direction(
 	    scene.rightdown,
@@ -1006,7 +1001,6 @@ void scene_touch_up(
     }
     else
     {
-
 	scene.rightdown = 0;
 	maincube_set_direction(
 	    -scene.leftdown,
@@ -1048,7 +1042,6 @@ void scene_key_up(
 
     if (code == SDLK_LEFT)
     {
-
 	scene.leftdown = 0;
 	maincube_set_direction(
 	    scene.rightdown,
@@ -1061,6 +1054,14 @@ void scene_key_up(
 	maincube_set_direction(
 	    -scene.leftdown,
 	    scene.speed);
+    }
+    else if (code == SDLK_RETURN)
+    {
+	scene.speed = 0.0;
+	bus_notify(
+	    "SCN",
+	    "OPENMENU",
+	    NULL);
     }
 }
 
