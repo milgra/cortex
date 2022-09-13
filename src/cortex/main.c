@@ -38,7 +38,8 @@ void main_open(char* url)
 {
     char newurl[100];
     snprintf(newurl, 100, "xdg-open %s", url);
-    system(newurl);
+    int result = system(newurl);
+    if (result < 0) zc_log_error("system call error %s", newurl);
 }
 
 void main_buy(char* item)
@@ -524,8 +525,9 @@ int main(int argc, char* argv[])
 
     srand((unsigned int) time(NULL));
 
-    char cwd[PATH_MAX] = {"~"};
-    getcwd(cwd, sizeof(cwd));
+    char  cwd[PATH_MAX] = {"~"};
+    char* res           = getcwd(cwd, sizeof(cwd));
+    if (res == NULL) zc_log_error("CWD error");
 
     char* sdl_base = SDL_GetBasePath();
     char* wrk_path = path_new_normalize(sdl_base, NULL); // REL 6
