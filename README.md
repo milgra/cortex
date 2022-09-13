@@ -1,7 +1,5 @@
 # Cortex - The psychedelic tunnel-runner
 
-![Cortex](cortex_menu.png)
-
 ![Cortex](cortex_game.png)
 
 You are a thought. A thought to be born…
@@ -9,6 +7,8 @@ You are a thought. A thought to be born…
 Guide your thought through the labyrinth of the brain, avoid hitting the walls and obstacles, nothing should distract you…
 
 A minimalistic-ambient reflex game with a 60 frames per second flow experienceand the atmospheric music of Tamas Katai.
+
+The code is also suitable for learning purposes.
 
 ### Files
 
@@ -49,6 +49,13 @@ script.c - Scene script reader
 settings.c - Settings handler
 
 voxel.c - Voxel state
+
+### Tech info
+
+Cortex is a pure C project written in [headerless C](https://github.com/milgra/headerlessc).
+It uses reference-counted memory management ( zc_memory.c ).
+It uses modular programming with mediator - implementation groups with different functionality don't include each other directly, they send messages to each other.
+If a module is "static" a global variable is used to store it's state, instancing is meaningless .
 
 ### TODO
 
