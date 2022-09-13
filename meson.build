@@ -52,7 +52,6 @@ com_sources = ['src/cortex/buffers.c',
 	       'src/cortex/particle.c',
 	       'src/cortex/scene.c',
 	       'src/cortex/script.c',
-	       'src/cortex/pixeltext.c',
 
 	       'src/modules/core/zc_cstring.c',
 	       'src/modules/core/zc_map.c',
@@ -77,6 +76,7 @@ com_sources = ['src/cortex/buffers.c',
 	       'src/modules/voxel/settings.c',
 	       'src/modules/voxel/voxel.c',
 	       'src/modules/voxel/bus.c',
+	       'src/modules/voxel/pixeltext.C',
 
 	       'src/modules/utils/str_util.c']
 
