@@ -24,13 +24,10 @@ main.c - SDL handling, top level event handling
 maincube.c - Main cube state  
 menu.c - Main menu handling  
 ogl.c - OpenGL functions  
-particle.c - Particle effect generator  
-pixeltext.c - Pixel text renderer  
-renderer.c - OpenGL rendering  
-scene.c - Scene handling and rendering  
-script.c - Scene script reader  
-settings.c - Settings handler  
-voxel.c - Voxel state  
+particle.c - Particle entity for effects
+scene.c - Scene handler
+ui.c - UI handler
+voxelutil.c - Voxel generator for labels
 
 ### Tech info
 
