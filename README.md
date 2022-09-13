@@ -12,43 +12,25 @@ The code is also suitable for learning purposes.
 
 ### Files
 
-buffers.c - Vertex buffers for different layers of the scene
-
-bus.c - Message bus for inter-module communication
-
-defaults.c - Settings and defaults
-
-excavator.c - Route excavator for scene
-
-file.c - Config file handling
-
-floatbuffer.c - Float  collector for opengl vertex buffer
-
-generator.c - Scene generator
-
-levels.c - Level descriptions
-
-main.c - SDL handling, top level event handling
-
-maincube.c - Main cube state
-
-menu.c - Main menu handling
-
-ogl.c - OpenGL functions
-
-particle.c - Particle effect generator
-
-pixeltext.c - Pixel text renderer
-
-renderer.c - OpenGL rendering
-
-scene.c - Scene handling and rendering
-
-script.c - Scene script reader
-
-settings.c - Settings handler
-
-voxel.c - Voxel state
+buffers.c - Vertex buffers for different layers of the scene  
+bus.c - Message bus for inter-module communication  
+defaults.c - Settings and defaults   
+excavator.c - Route excavator for scene  
+file.c - Config file handling  
+floatbuffer.c - Float  collector for opengl vertex buffer  
+generator.c - Scene generator  
+levels.c - Level descriptions  
+main.c - SDL handling, top level event handling  
+maincube.c - Main cube state  
+menu.c - Main menu handling  
+ogl.c - OpenGL functions  
+particle.c - Particle effect generator  
+pixeltext.c - Pixel text renderer  
+renderer.c - OpenGL rendering  
+scene.c - Scene handling and rendering  
+script.c - Scene script reader  
+settings.c - Settings handler  
+voxel.c - Voxel state  
 
 ### Tech info
 
