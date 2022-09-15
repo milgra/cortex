@@ -603,10 +603,7 @@ int main(int argc, char* argv[])
 	    SDL_WINDOWPOS_UNDEFINED,
 	    width,
 	    height,
-	    SDL_WINDOW_OPENGL |
-		SDL_WINDOW_RESIZABLE |
-		SDL_WINDOW_ALLOW_HIGHDPI |
-		SDL_WINDOW_SHOWN);
+	    SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN);
 
 	if (window != NULL)
 	{

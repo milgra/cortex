@@ -34,11 +34,9 @@ cortex_inc = include_directories(
 	'/usr/include/GL',
 	'/usr/include/SDL2',
 	'src/cortex',
-	'src/modules',
-	'src/modules/core',
-	'src/modules/math',
-	'src/modules/utils',
-	'src/modules/voxel')
+	'src/cortex/gl',
+	'src/zc_core',
+	'src/zc_math')
 
 
 com_sources = ['src/cortex/buffers.c',
@@ -52,33 +50,32 @@ com_sources = ['src/cortex/buffers.c',
 	       'src/cortex/particle.c',
 	       'src/cortex/scene.c',
 	       'src/cortex/script.c',
+	       'src/cortex/file.c',
+	       'src/cortex/settings.c',
+	       'src/cortex/voxel.c',
+	       'src/cortex/bus.c',
+	       'src/cortex/pixeltext.c',
+	       'src/cortex/str_util.c',
 
-	       'src/modules/core/zc_cstring.c',
-	       'src/modules/core/zc_map.c',
-	       'src/modules/core/zc_memory.c',
-	       'src/modules/core/zc_string.c',
-	       'src/modules/core/zc_vector.c',
-	       'src/modules/core/zc_log.c',
-	       'src/modules/core/zc_time.c',
-	       'src/modules/core/zc_path.c',
+	       'src/cortex/gl/floatbuffer.c',	
+	       'src/cortex/gl/ogl.c',
+	       'src/cortex/gl/renderer.c',
 
-	       'src/modules/math/zc_vec2.c',
-	       'src/modules/math/zc_util2.c',
-	       'src/modules/math/zc_vec3.c',
-	       'src/modules/math/zc_util3.c',
-	       'src/modules/math/zc_vec4.c',
-	       'src/modules/math/zc_mat4.c',
+	       'src/zc_core/zc_cstring.c',
+	       'src/zc_core/zc_map.c',
+	       'src/zc_core/zc_memory.c',
+	       'src/zc_core/zc_string.c',
+	       'src/zc_core/zc_vector.c',
+	       'src/zc_core/zc_log.c',
+	       'src/zc_core/zc_time.c',
+	       'src/zc_core/zc_path.c',
 
-	       'src/modules/voxel/file.c',
-       	       'src/modules/voxel/floatbuffer.c',	
-	       'src/modules/voxel/ogl.c',
-	       'src/modules/voxel/renderer.c',
-	       'src/modules/voxel/settings.c',
-	       'src/modules/voxel/voxel.c',
-	       'src/modules/voxel/bus.c',
-	       'src/modules/voxel/pixeltext.C',
-
-	       'src/modules/utils/str_util.c']
+	       'src/zc_math/zc_vec2.c',
+	       'src/zc_math/zc_util2.c',
+	       'src/zc_math/zc_vec3.c',
+	       'src/zc_math/zc_util3.c',
+	       'src/zc_math/zc_vec4.c',
+	       'src/zc_math/zc_mat4.c']
 
 install_data('res/break.wav', install_dir : pkg_datadir )
 install_data('res/game.wav', install_dir : pkg_datadir )
