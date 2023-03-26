@@ -36,6 +36,12 @@ It uses reference-counted memory management ( zc_memory.c ).
 It uses modular programming with mediator - implementation groups with different functionality that don't include each other directly, they send messages to each other.  
 If a module is "static" a global variable is used to store it's state, instancing is meaningless .  
 
+### WebAssembly 
+
+find src -type f -name "*.c" > files.txt
+
+emcc -Isrc/cortex -Isrc/zc_core -Isrc/zc_math -Isrc/cortex/gl -I/home/milgra/Downloads/emsdk/upstream/emscripten/system/includer/emscripten.h -DPATH_MAX=255 -DPKG_DATADIR=\"/\" -DCORTEX_VERSION=\"1.0\" -sUSE_SDL=2 -sUSE_SDL_MIXER=2 -sMAX_WEBGL_VERSION=1 $(cat files.txt) -o cortex.html
+
 ### TODO
 
 - keyboard control in menu  

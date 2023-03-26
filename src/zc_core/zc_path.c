@@ -15,7 +15,9 @@ char* path_new_normalize(char* path, char* execpath);
 
 #include "zc_memory.c"
 #include <limits.h>
+#ifdef __linux__
 #include <linux/limits.h>
+#endif
 #include <string.h>
 
 char* path_new_append(char* root, char* component)

@@ -1,3 +1,5 @@
+"#version 100\n"
+"precision highp float;\n"
 "\
 uniform sampler2D texture_base;\
 uniform sampler2D texture_glow;\

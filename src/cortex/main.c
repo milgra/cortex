@@ -7,7 +7,15 @@
 #include "SDL_mixer.h"
 #include "bus.c"
 #include "defaults.c"
-#include "linux/limits.h"
+
+#ifdef EMSCRIPTEN
+    #include <emscripten.h>
+    #include <emscripten/html5.h>
+#endif
+
+#ifdef __linux__
+    #include "linux/limits.h"
+#endif
 #include "menu.c"
 #include "renderer.c"
 #include "scene.c"
@@ -39,7 +47,8 @@ void main_open(char* url)
     char newurl[100];
     snprintf(newurl, 100, "xdg-open %s", url);
     int result = system(newurl);
-    if (result < 0) zc_log_error("system call error %s", newurl);
+    if (result < 0)
+	zc_log_error("system call error %s", newurl);
 }
 
 void main_buy(char* item)
@@ -350,135 +359,133 @@ void main_free(
     settings_free();
 }
 
-void main_loop(
-    void)
+int main_loop(double time, void* userdata)
 {
     SDL_Event event;
 
-    while (!quit)
+    while (SDL_PollEvent(&event) != 0)
     {
-	while (SDL_PollEvent(&event) != 0)
+	if (event.type == SDL_MOUSEBUTTONDOWN ||
+	    event.type == SDL_MOUSEBUTTONUP ||
+	    event.type == SDL_MOUSEMOTION)
 	{
-	    if (event.type == SDL_MOUSEBUTTONDOWN ||
-		event.type == SDL_MOUSEBUTTONUP ||
-		event.type == SDL_MOUSEMOTION)
-	    {
-		int x = 0;
-		int y = 0;
+	    int x = 0;
+	    int y = 0;
 
-		SDL_GetMouseState(
-		    &x,
-		    &y);
+	    SDL_GetMouseState(
+		&x,
+		&y);
+
+	    v2_t dimensions = {
+		.x = x * scale,
+		.y = y * scale};
+
+	    if (event.type == SDL_MOUSEBUTTONDOWN)
+	    {
+		bus_notify(
+		    "CTL",
+		    "TOUCHDOWN",
+		    &dimensions);
+	    }
+	    else if (event.type == SDL_MOUSEBUTTONUP)
+	    {
+		bus_notify(
+		    "CTL",
+		    "TOUCHUP",
+		    &dimensions);
+	    }
+	}
+	else if (event.type == SDL_QUIT)
+	{
+	    quit = 1;
+	}
+	else if (event.type == SDL_WINDOWEVENT)
+	{
+	    if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+		event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+	    {
+		width  = event.window.data1;
+		height = event.window.data2;
 
 		v2_t dimensions = {
-		    .x = x * scale,
-		    .y = y * scale};
+		    .x = width * scale,
+		    .y = height * scale};
 
-		if (event.type == SDL_MOUSEBUTTONDOWN)
-		{
-		    bus_notify(
-			"CTL",
-			"TOUCHDOWN",
-			&dimensions);
-		}
-		else if (event.type == SDL_MOUSEBUTTONUP)
-		{
-		    bus_notify(
-			"CTL",
-			"TOUCHUP",
-			&dimensions);
-		}
-	    }
-	    else if (event.type == SDL_QUIT)
-	    {
-		quit = 1;
-	    }
-	    else if (event.type == SDL_WINDOWEVENT)
-	    {
-		if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
-		    event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-		{
-		    width  = event.window.data1;
-		    height = event.window.data2;
+		zc_log_debug("resized %f %f", dimensions.x, dimensions.y);
 
-		    v2_t dimensions = {
-			.x = width * scale,
-			.y = height * scale};
-
-		    zc_log_debug("resized %f %f", dimensions.x, dimensions.y);
-
-		    defaults.display_size = dimensions;
-
-		    bus_notify(
-			"CTL",
-			"RESIZE",
-			&dimensions);
-		}
-	    }
-	    else if (event.type == SDL_KEYDOWN)
-	    {
-		bus_notify(
-		    "CTL",
-		    "KEYDOWN",
-		    &event.key.keysym.sym);
-	    }
-	    else if (event.type == SDL_KEYUP)
-	    {
-		switch (event.key.keysym.sym)
-		{
-
-		    case SDLK_f:
-
-			main_onmessage((char*) "FULLSCREEN", NULL);
-			break;
-
-		    case SDLK_ESCAPE:
-
-			main_onmessage((char*) "FULLSCREEN", NULL);
-			break;
-		}
+		defaults.display_size = dimensions;
 
 		bus_notify(
 		    "CTL",
-		    "KEYUP",
-		    &event.key.keysym.sym);
-	    }
-	    else if (event.type == SDL_APP_WILLENTERFOREGROUND)
-	    {
-		bus_notify(
-		    "CTL",
-		    "RESETTIME",
-		    NULL); // reset scene timer to avoid giant step
+		    "RESIZE",
+		    &dimensions);
 	    }
 	}
-
-	// update simulation
-
-	uint32_t ticks = SDL_GetTicks();
-
-	// avoid first iteration ( ticks == 0 ) or type overflow
-
-	if (prevticks > 0 &&
-	    prevticks < ticks)
+	else if (event.type == SDL_KEYDOWN)
 	{
-	    int32_t delta = ticks - prevticks;
-	    float   ratio = ((float) delta / 1000.0);
-
 	    bus_notify(
 		"CTL",
-		"UPDATE",
-		&ratio);
-
-	    bus_notify(
-		"CTL",
-		"RENDER",
-		&ticks);
+		"KEYDOWN",
+		&event.key.keysym.sym);
 	}
+	else if (event.type == SDL_KEYUP)
+	{
+	    switch (event.key.keysym.sym)
+	    {
 
-	prevticks = ticks;
+		case SDLK_f:
 
-	SDL_GL_SwapWindow(window);
+		    main_onmessage((char*) "FULLSCREEN", NULL);
+		    break;
+
+		case SDLK_ESCAPE:
+
+		    main_onmessage((char*) "FULLSCREEN", NULL);
+		    break;
+	    }
+
+	    bus_notify(
+		"CTL",
+		"KEYUP",
+		&event.key.keysym.sym);
+	}
+	else if (event.type == SDL_APP_WILLENTERFOREGROUND)
+	{
+	    bus_notify(
+		"CTL",
+		"RESETTIME",
+		NULL); // reset scene timer to avoid giant step
+	}
     }
+
+    // update simulation
+
+    uint32_t ticks = SDL_GetTicks();
+
+    // avoid first iteration ( ticks == 0 ) or type overflow
+
+    if (prevticks > 0 &&
+	prevticks < ticks)
+    {
+	int32_t delta = ticks - prevticks;
+	float   ratio = ((float) delta / 1000.0);
+
+	bus_notify(
+	    "CTL",
+	    "UPDATE",
+	    &ratio);
+
+	bus_notify(
+	    "CTL",
+	    "RENDER",
+	    &ticks);
+    }
+
+    prevticks = ticks;
+
+    SDL_GL_SwapWindow(window);
+
+    return 1;
 }
 
 int main(int argc, char* argv[])
@@ -522,7 +529,8 @@ int main(int argc, char* argv[])
 
     char  cwd[PATH_MAX] = {"~"};
     char* res           = getcwd(cwd, sizeof(cwd));
-    if (res == NULL) zc_log_error("CWD error");
+    if (res == NULL)
+	zc_log_error("CWD error");
 
     char* sdl_base = SDL_GetBasePath();
     char* wrk_path = path_new_normalize(sdl_base, NULL); // REL 6
@@ -547,14 +555,16 @@ int main(int argc, char* argv[])
 
     // init audio
 
-    if (SDL_Init(SDL_INIT_AUDIO) != 0) zc_log_error("SDL Audio init error %s\n", SDL_GetError());
+    if (SDL_Init(SDL_INIT_AUDIO) != 0)
+	zc_log_error("SDL Audio init error %s\n", SDL_GetError());
 
     Uint16 audio_format   = AUDIO_S16SYS;
     int    audio_rate     = 44100;
     int    audio_channels = 1;
     int    audio_buffers  = 4096;
 
-    if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) zc_log_error("Unable to initialize audio: %s\n", Mix_GetError());
+    if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0)
+	zc_log_error("Unable to initialize audio: %s\n", Mix_GetError());
 
     // init sdl
 
@@ -562,13 +572,15 @@ int main(int argc, char* argv[])
     {
 	// setup opengl version
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
 	SDL_GL_SetAttribute(
 	    SDL_GL_CONTEXT_MAJOR_VERSION,
 	    2);
 
 	SDL_GL_SetAttribute(
 	    SDL_GL_CONTEXT_MINOR_VERSION,
-	    1);
+	    0);
 
 	SDL_GL_SetAttribute(
 	    SDL_GL_DOUBLEBUFFER,
@@ -633,33 +645,50 @@ int main(int argc, char* argv[])
 
 		// try to set up vsync
 
-		if (SDL_GL_SetSwapInterval(1) < 0) zc_log_error("SDL swap interval error %s", SDL_GetError());
+		if (SDL_GL_SetSwapInterval(1) < 0)
+		    zc_log_error("SDL swap interval error %s", SDL_GetError());
 
 		main_init();
-		main_loop();
+
+#ifdef EMSCRIPTEN
+		// setup the main thread for the browser and release thread with return
+		emscripten_request_animation_frame_loop(main_loop, 0);
+		return 0;
+#else
+		// infinite loop til quit
+		while (!quit)
+		{
+		    main_loop(0, NULL);
+		}
+#endif
+
 		main_free();
 
 		// cleanup
 
 		SDL_GL_DeleteContext(context);
 	    }
-	    else zc_log_error("SDL context creation error %s", SDL_GetError());
+	    else
+		zc_log_error("SDL context creation error %s", SDL_GetError());
 
 	    // cleanup
 
 	    SDL_DestroyWindow(window);
 	}
-	else zc_log_error("SDL window creation error %s", SDL_GetError());
+	else
+	    zc_log_error("SDL window creation error %s", SDL_GetError());
 
 	// cleanup
 
 	SDL_Quit();
     }
-    else zc_log_error("SDL init error %s", SDL_GetError());
+    else
+	zc_log_error("SDL init error %s", SDL_GetError());
 
     Mix_CloseAudio();
 
-    if (res_par) REL(res_par);
+    if (res_par)
+	REL(res_par);
     REL(wrk_path);
 
 #ifdef DEBUG

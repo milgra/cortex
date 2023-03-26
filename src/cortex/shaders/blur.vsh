@@ -1,3 +1,5 @@
+"#version 100\n"
+"precision highp float;\n"
 "\
 attribute vec3 position;\
 attribute vec2 texcoord;\

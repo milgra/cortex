@@ -32,7 +32,9 @@ uint32_t          settings_getunsigned(const char* key);
 
 #if __INCLUDE_LEVEL__ == 0
 
-#include "linux/limits.h"
+#ifdef __linux__
+    #include "linux/limits.h"
+#endif
 #include "zc_cstring.c"
 #include "zc_memory.c"
 
