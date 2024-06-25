@@ -10,6 +10,12 @@ A minimalistic-ambient reflex game with a 60 frames per second flow experiencean
 
 The code is also suitable for learning purposes.
 
+## Try it! ##
+
+[https://github.com/milgra/cortex/releases/download/0.8/cortex.app.tar.gz]
+
+Extract the archive and call cortex.app/cortex. It is a standalone application bundle running on all distributions.
+
 ### Files
 
 buffers.c - Vertex buffers for different layers of the scene  
