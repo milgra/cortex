@@ -44,5 +44,6 @@ emcc -Isrc/cortex -Isrc/zc_core -Isrc/zc_math -Isrc/cortex/gl -I/home/milgra/Dow
 
 ### TODO
 
+- imageelement throw error is resource directory not exists braw/cortex
 - keyboard control in menu  
 - rethink scene generation, it's hard to understand currently and flipping is visible on narrow screens
