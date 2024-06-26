@@ -16,6 +16,16 @@ The code is also suitable for learning purposes.
 
 Extract the archive and call cortex.app/cortex. It is a standalone application bundle running on all distributions.
 
+## Build ##
+
+'''
+git clone https://github.com/milgra/cortex.git
+cd cortex
+meson build --buildtype=release
+ninja -C build
+sudo ninja -C build install
+'''
+
 ### Files
 
 buffers.c - Vertex buffers for different layers of the scene  
