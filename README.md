@@ -18,13 +18,13 @@ Extract the archive and call cortex.app/cortex. It is a standalone application b
 
 ## Build ##
 
-'''
+```
 git clone https://github.com/milgra/cortex.git
 cd cortex
 meson build --buildtype=release
 ninja -C build
 sudo ninja -C build install
-'''
+```
 
 ### Files
 
